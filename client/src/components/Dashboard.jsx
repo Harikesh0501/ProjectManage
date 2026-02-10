@@ -480,7 +480,7 @@ const Dashboard = ({ setIsDarkMode, isDarkMode }) => {
                               <div className="flex items-center justify-between mt-2">
                                 <p className="text-xs text-slate-400 truncate w-24">{mentor.expertise.join(', ')}</p>
                                 <a
-                                  href={mentor.resume ? (mentor.resume.startsWith('http') ? mentor.resume : `${API_URL}/${mentor.resume.replace(/\\/g, '/')}`) : '#'}
+                                  href={mentor.resume ? (mentor.resume.startsWith('http') ? mentor.resume : `${API_URL}/${mentor.resume}`) : '#'}
                                   target="_blank"
                                   rel="noopener noreferrer"
                                   className="text-[10px] px-2 py-1 dark:bg-white/5 bg-blue-50 rounded hover:bg-blue-100 dark:hover:bg-white/10 text-blue-500 dark:text-blue-300"
