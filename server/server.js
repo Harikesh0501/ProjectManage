@@ -79,5 +79,22 @@ app.use('/api/ai', aiRoutes);
 
 app.get('/', (req, res) => res.send('API running'));
 
+// Global Error Handler
+app.use((err, req, res, next) => {
+  console.error('🔥 Global Error:', err);
+  res.status(500).json({
+    msg: 'Server Error',
+    error: err.message,
+    stack: process.env.NODE_ENV === 'production' ? null : err.stack
+  });
+});
+
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+  console.log('✅ Cloudinary Config:', {
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME ? 'Set' : 'Missing',
+    api_key: process.env.CLOUDINARY_API_KEY ? 'Set' : 'Missing',
+    api_secret: process.env.CLOUDINARY_API_SECRET ? 'Set' : 'Missing'
+  });
+});

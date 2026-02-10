@@ -162,7 +162,8 @@ router.put('/upload-photo', auth, checkFileStorageEnabled, upload.single('photo'
     const user = await User.findByIdAndUpdate(req.user.id, { photo: photoPath }, { new: true }).select('-password');
     res.json({ msg: 'Photo uploaded successfully', user });
   } catch (err) {
-    res.status(500).json({ msg: 'Server error' });
+    console.error('❌ Upload Photo Error:', err);
+    res.status(500).json({ msg: 'Server error', error: err.message });
   }
 });
 
