@@ -199,7 +199,7 @@ const Profile = () => {
                 <div className="relative mb-6">
                   <div className="w-32 h-32 rounded-full p-1 bg-gradient-to-tr from-violet-500 to-fuchsia-500">
                     <img
-                      src={profile.photo ? `${API_URL}/${profile.photo}` : 'https://via.placeholder.com/200'}
+                      src={profile.photo ? (profile.photo.startsWith('http') ? profile.photo : `${API_URL}/${profile.photo}`) : 'https://via.placeholder.com/200'}
                       alt="Profile"
                       className="w-full h-full rounded-full object-cover bg-slate-950 border-4 border-slate-900"
                     />
