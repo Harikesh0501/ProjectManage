@@ -292,7 +292,7 @@ const JoinProject = () => {
                             const selectedMentor = mentors.find(m => m.user._id === formData.mentor);
                             return selectedMentor && selectedMentor.resume ? (
                               <a
-                                href={`${API_URL}/${selectedMentor.resume}`}
+                                href={selectedMentor.resume.startsWith('http') ? selectedMentor.resume : `${API_URL}/${selectedMentor.resume}`}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="inline-flex items-center text-sm text-cyan-600 dark:text-cyan-400 hover:text-cyan-500 dark:hover:text-cyan-300 transition-colors"
