@@ -116,11 +116,11 @@ const TaskReviewModal = ({ isOpen, onClose, task, onReviewed }) => {
                                     {screenshots.map((screenshot, idx) => (
                                         <div
                                             key={idx}
-                                            onClick={() => setSelectedImage(`${API_URL}/${screenshot}`)}
+                                            onClick={() => setSelectedImage(screenshot.startsWith('http') ? screenshot : `${API_URL}/${screenshot}`)}
                                             className="relative cursor-pointer group"
                                         >
                                             <img
-                                                src={`${API_URL}/${screenshot}`}
+                                                src={screenshot.startsWith('http') ? screenshot : `${API_URL}/${screenshot}`}
                                                 alt={`Screenshot ${idx + 1}`}
                                                 className="w-full h-24 object-cover rounded-lg border border-slate-700 group-hover:border-purple-500 transition-colors"
                                             />
