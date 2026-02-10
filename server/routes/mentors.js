@@ -1,0 +1,68 @@
+const express = require('express');
+const multer = require('multer');
+const path = require('path');
+const auth = require('../middleware/auth');
+const User = require('../models/User');
+const Mentor = require('../models/Mentor');
+const Settings = require('../models/Settings');
+
+const router = express.Router();
+
+// Middleware to check if File Storage is enabled
+const checkFileStorageEnabled = async (req, res, next) => {
+  try {
+    const settings = await Settings.findOne();
+    if (settings && settings.services && !settings.services.fileStorage) {
+      return res.status(503).json({
+        error: 'File Storage is disabled by administrator',
+        disabled: true
+      });
+    }
+    next();
+  } catch (err) {
+    next();
+  }
+};
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'uploads/');
+  },
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + path.extname(file.originalname));
+  }
+});
+
+const upload = multer({ storage });
+
+// Get all mentors
+router.get('/', auth, async (req, res) => {
+  try {
+    const mentors = await Mentor.find().populate('user', 'name email');
+    res.json(mentors);
+  } catch (err) {
+    res.status(500).json({ msg: 'Server error' });
+  }
+});
+
+// Upload resume
+router.put('/upload-resume', auth, checkFileStorageEnabled, upload.single('resume'), async (req, res) => {
+  console.log('Upload resume called');
+  console.log('req.file:', req.file);
+  console.log('req.user:', req.user);
+  try {
+    const mentor = await Mentor.findOne({ user: req.user.id });
+    console.log('Mentor found:', mentor);
+    if (!mentor) return res.status(404).json({ msg: 'Mentor not found' });
+
+    mentor.resume = req.file.path;
+    await mentor.save();
+
+    res.json({ msg: 'Resume uploaded', resume: req.file.path });
+  } catch (err) {
+    console.log('Error:', err);
+    res.status(500).json({ msg: 'Server error' });
+  }
+});
+
+module.exports = router;
