@@ -454,13 +454,13 @@ const Profile = () => {
 
                 <div className="flex gap-4">
                   {mentorData.resume && (
-                    <Button variant="outline" className="border-white/10 hover:bg-white/5 text-slate-300" asChild>
-                      <a href={`${API_URL}/${mentorData.resume}`} target="_blank" rel="noopener noreferrer">
-                        VIew Resume
+                    <Button variant="outline" className="dark:border-white/10 border-slate-200 hover:bg-slate-100 dark:hover:bg-white/5 text-slate-700 dark:text-slate-300" asChild>
+                      <a href={mentorData.resume.startsWith('http') ? mentorData.resume : `${API_URL}/${mentorData.resume}`} target="_blank" rel="noopener noreferrer">
+                        View Resume
                       </a>
                     </Button>
                   )}
-                  <Button onClick={() => resumeInputRef.current.click()} className="bg-white/10 hover:bg-white/20 text-white">
+                  <Button onClick={() => resumeInputRef.current.click()} className="dark:bg-white/10 bg-slate-100 hover:bg-slate-200 dark:hover:bg-white/20 text-slate-900 dark:text-white">
                     <UploadCloud className="w-4 h-4 mr-2" />
                     {mentorData.resume ? 'Update Resume' : 'Upload Resume'}
                   </Button>
