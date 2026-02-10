@@ -24,13 +24,17 @@ const checkFileStorageEnabled = async (req, res, next) => {
   }
 };
 
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, 'uploads/');
+// Configure Cloudinary storage
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
+const cloudinary = require('../config/cloudinary');
+
+const storage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    folder: 'project_manage/resumes',
+    resource_type: 'auto', // Allow PDFs, Docs, etc.
+    // allowed_formats: ['pdf', 'doc', 'docx'], // Optional: restriction handled by fileFilter if needed, or let Cloudinary handle it
   },
-  filename: (req, file, cb) => {
-    cb(null, Date.now() + path.extname(file.originalname));
-  }
 });
 
 const upload = multer({ storage });

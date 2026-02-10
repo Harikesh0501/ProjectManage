@@ -27,14 +27,16 @@ const checkFileStorageEnabled = async (req, res, next) => {
 };
 
 // Configure multer for screenshot uploads
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, 'uploads/');
+// Configure Cloudinary storage
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
+const cloudinary = require('../config/cloudinary');
+
+const storage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    folder: 'project_manage/tasks',
+    allowed_formats: ['jpg', 'png', 'jpeg', 'webp', 'gif'],
   },
-  filename: (req, file, cb) => {
-    const uniqueName = `task_${Date.now()}_${Math.random().toString(36).substring(7)}${path.extname(file.originalname)}`;
-    cb(null, uniqueName);
-  }
 });
 
 const upload = multer({
