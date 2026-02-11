@@ -2,12 +2,18 @@ const nodemailer = require('nodemailer');
 require('dotenv').config();
 
 // Create transporter using Gmail or your email service
+// Create transporter using Gmail or your email service
 const transporter = nodemailer.createTransport({
-  service: 'gmail',
+  host: 'smtp.gmail.com',
+  port: 465,
+  secure: true, // use SSL
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASSWORD
-  }
+  },
+  connectionTimeout: 10000,
+  greetingTimeout: 5000,
+  socketTimeout: 10000,
 });
 
 // Email templates
