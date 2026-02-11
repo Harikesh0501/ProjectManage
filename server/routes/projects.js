@@ -389,7 +389,14 @@ router.put('/:id', auth, async (req, res) => {
   try {
     let project = await Project.findById(req.params.id);
     if (!project) return res.status(404).json({ msg: 'Project not found' });
-    if (project.creator.toString() !== req.user.id && req.user.role !== 'Admin') return res.status(401).json({ msg: 'Not authorized' });
+    const isCreator = project.creator.toString() === req.user.id;
+    const isAdmin = req.user.role === 'Admin';
+    const isTeamMember = project.teamMembers.some(id => id.toString() === req.user.id);
+    const isStudent = project.students.some(id => id.toString() === req.user.id);
+
+    if (!isCreator && !isAdmin && !isTeamMember && !isStudent) {
+      return res.status(401).json({ msg: 'Not authorized' });
+    }
 
     let updateData = { title, description, teamMembers, startDate, endDate, status };
     if (mentor !== undefined) {
