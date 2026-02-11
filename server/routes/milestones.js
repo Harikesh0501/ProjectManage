@@ -168,47 +168,46 @@ router.put('/:id', auth, async (req, res) => {
 
     await milestone.save();
 
-    // Send emails based on action
+    // Send emails based on action (Non-blocking)
     try {
       if (action === 'submit') {
         // Send email to mentor when student submits
         const mentorData = await User.findById(project.mentor);
         if (mentorData) {
           const studentData = await User.findById(req.user.id);
-          await emailService.sendMilestoneSubmittedEmail(
+          emailService.sendMilestoneSubmittedEmail(
             mentorData.email,
             mentorData.name,
             studentData.name,
             milestone.title,
             milestone.submissionGithubLink
-          );
+          ).catch(err => console.error('Email send failed (async):', err.message));
         }
       } else if (action === 'approve') {
         // Send email to student when mentor approves
         const studentData = await User.findById(milestone.submittedBy);
         if (studentData) {
-          await emailService.sendMilestoneApprovedEmail(
+          emailService.sendMilestoneApprovedEmail(
             studentData.email,
             studentData.name,
             milestone.title,
             approvalNotes || ''
-          );
+          ).catch(err => console.error('Email send failed (async):', err.message));
         }
       } else if (action === 'reject') {
         // Send email to student when mentor rejects
         const studentData = await User.findById(milestone.submittedBy);
         if (studentData) {
-          await emailService.sendMilestoneRejectedEmail(
+          emailService.sendMilestoneRejectedEmail(
             studentData.email,
             studentData.name,
             milestone.title,
             approvalNotes || 'Please revise and resubmit'
-          );
+          ).catch(err => console.error('Email send failed (async):', err.message));
         }
       }
     } catch (emailErr) {
-      console.warn('Warning: Failed to send milestone status emails:', emailErr.message);
-      // Don't fail the request if email fails
+      console.warn('Warning: Failed to initiate milestone status emails:', emailErr.message);
     }
 
     // Calculate new progress
