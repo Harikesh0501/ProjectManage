@@ -5,11 +5,14 @@ require('dotenv').config();
 // Create transporter using Gmail or your email service
 const transporter = nodemailer.createTransport({
   host: 'smtp.gmail.com',
-  port: 465,
-  secure: true, // use SSL
+  port: 587,
+  secure: false, // use STARTTLS
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASSWORD
+  },
+  tls: {
+    rejectUnauthorized: false
   },
   connectionTimeout: 10000,
   greetingTimeout: 5000,
