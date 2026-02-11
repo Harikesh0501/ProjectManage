@@ -168,46 +168,47 @@ router.put('/:id', auth, async (req, res) => {
 
     await milestone.save();
 
+    // Send emails based on action
     // Send emails based on action (Non-blocking)
-    try {
-      if (action === 'submit') {
-        // Send email to mentor when student submits
-        const mentorData = await User.findById(project.mentor);
+    if (action === 'submit') {
+      // Send email to mentor when student submits
+      User.findById(project.mentor).then(mentorData => {
         if (mentorData) {
-          const studentData = await User.findById(req.user.id);
-          emailService.sendMilestoneSubmittedEmail(
-            mentorData.email,
-            mentorData.name,
-            studentData.name,
-            milestone.title,
-            milestone.submissionGithubLink
-          ).catch(err => console.error('Email send failed (async):', err.message));
+          User.findById(req.user.id).then(studentData => {
+            emailService.sendMilestoneSubmittedEmail(
+              mentorData.email,
+              mentorData.name,
+              studentData.name,
+              milestone.title,
+              milestone.submissionGithubLink
+            ).catch(err => console.warn('Failed to send submit email:', err.message));
+          });
         }
-      } else if (action === 'approve') {
-        // Send email to student when mentor approves
-        const studentData = await User.findById(milestone.submittedBy);
+      });
+    } else if (action === 'approve') {
+      // Send email to student when mentor approves
+      User.findById(milestone.submittedBy).then(studentData => {
         if (studentData) {
           emailService.sendMilestoneApprovedEmail(
             studentData.email,
             studentData.name,
             milestone.title,
             approvalNotes || ''
-          ).catch(err => console.error('Email send failed (async):', err.message));
+          ).catch(err => console.warn('Failed to send approval email:', err.message));
         }
-      } else if (action === 'reject') {
-        // Send email to student when mentor rejects
-        const studentData = await User.findById(milestone.submittedBy);
+      });
+    } else if (action === 'reject') {
+      // Send email to student when mentor rejects
+      User.findById(milestone.submittedBy).then(studentData => {
         if (studentData) {
           emailService.sendMilestoneRejectedEmail(
             studentData.email,
             studentData.name,
             milestone.title,
             approvalNotes || 'Please revise and resubmit'
-          ).catch(err => console.error('Email send failed (async):', err.message));
+          ).catch(err => console.warn('Failed to send rejection email:', err.message));
         }
-      }
-    } catch (emailErr) {
-      console.warn('Warning: Failed to initiate milestone status emails:', emailErr.message);
+      });
     }
 
     // Calculate new progress
