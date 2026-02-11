@@ -131,33 +131,35 @@ router.post('/', auth, async (req, res) => {
       }
     }
 
-    // Send emails to all team members
-    try {
-      console.log('📧 Sending meeting emails to', teamMembersToInvite.length, 'members');
-      const projectData = await Project.findById(projectId);
-      for (const member of teamMembersToInvite) {
-        console.log('Checking member:', { name: member.name, email: member.email, userId: member.userId, mentorId: userId });
-        if (member.email && member.userId.toString() !== userId) {
-          console.log('📧 Sending email to:', member.email);
-          const result = await emailService.sendMeetingScheduledEmail(
-            member.email,
-            member.name,
-            user.name,
-            title,
-            projectData.title,
-            scheduledDate,
-            duration,
-            zoomMeetingLink
-          );
-          console.log('📧 Email result:', result);
-        } else {
-          console.log('⏭️  Skipping mentor:', member.email);
-        }
+    // Send emails to all team members (Fire and Forget)
+    (async () => {
+      try {
+        console.log('📧 Sending meeting emails to', teamMembersToInvite.length, 'members');
+        const projectData = await Project.findById(projectId);
+        await Promise.allSettled(teamMembersToInvite.map(async (member) => {
+          if (member.email && member.userId.toString() !== userId) {
+            try {
+              // Determine if this user is a student or team member to customize email if needed
+              // For now using generic template
+              await emailService.sendMeetingScheduledEmail(
+                member.email,
+                member.name,
+                user.name,
+                title,
+                projectData.title,
+                scheduledDate,
+                duration,
+                zoomMeetingLink
+              );
+            } catch (err) {
+              console.error(`Failed to send email to ${member.email}:`, err.message);
+            }
+          }
+        }));
+      } catch (emailErr) {
+        console.error('❌ Error in meeting email background process:', emailErr.message);
       }
-    } catch (emailErr) {
-      console.error('❌ Error sending meeting emails:', emailErr.message);
-      // Don't fail the request if email fails
-    }
+    })();
 
     res.status(201).json({
       message: 'Meeting created successfully',

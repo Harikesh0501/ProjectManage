@@ -62,7 +62,8 @@ router.get('/project/:projectId', auth, async (req, res) => {
     const oneDay = 24 * 60 * 60 * 1000;
 
     // Find pending tasks with close deadlines and low priority
-    await Task.updateMany({
+    // Fire and forget - don't wait for independent update
+    Task.updateMany({
       project: req.params.projectId,
       status: { $ne: 'Completed' },
       deadline: {
@@ -74,7 +75,7 @@ router.get('/project/:projectId', auth, async (req, res) => {
       priority: { $ne: 'High' }
     }, {
       priority: 'High'
-    });
+    }).catch(err => console.error('Auto-escalation error:', err));
 
     const tasks = await Task.find({ project: req.params.projectId })
       .populate('assignedTo', 'name email')

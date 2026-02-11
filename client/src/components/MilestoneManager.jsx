@@ -7,7 +7,7 @@ import { Card } from './ui/card';
 import { Input } from './ui/input';
 import API_URL from '../config';
 
-const MilestoneManager = ({ projectId, onMilestonesUpdate }) => {
+const MilestoneManager = ({ projectId, onMilestonesUpdate, onRefresh }) => {
   const [milestones, setMilestones] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
@@ -57,6 +57,7 @@ const MilestoneManager = ({ projectId, onMilestonesUpdate }) => {
         submilestoneCount: 0,
       });
       setShowForm(false);
+      if (onRefresh) onRefresh();
     } catch (err) {
       console.error('Error creating milestone:', err);
     }
@@ -69,6 +70,7 @@ const MilestoneManager = ({ projectId, onMilestonesUpdate }) => {
           headers: { 'x-auth-token': localStorage.getItem('token') }
         });
         setMilestones(milestones.filter(m => m._id !== id));
+        if (onRefresh) onRefresh();
       } catch (err) {
         console.error('Error deleting milestone:', err);
       }
