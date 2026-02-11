@@ -36,8 +36,9 @@ router.get('/', auth, async (req, res) => {
       query = { $or: [{ creator: req.user.id }, { teamMembers: req.user.id }, { students: req.user.id }] };
       console.log('Student query:', query);
     } else {
-      // Other roles see nothing or handle accordingly
-      query = {};
+      // Other roles or unrecognized roles see nothing
+      console.warn('Unknown role requesting projects:', req.user.role);
+      return res.json([]); // Return empty array instead of all projects
     }
     const projects = await Project.find(query).populate('creator students teamMembers mentor', 'name email skills collegeId bio');
     console.log('Projects found:', projects.length);
