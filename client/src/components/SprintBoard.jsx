@@ -15,7 +15,7 @@ import TaskSubmissionModal from './TaskSubmissionModal';
 import TaskReviewModal from './TaskReviewModal';
 import API_URL from '../config';
 
-const SprintBoard = ({ projectId, userRole }) => {
+const SprintBoard = ({ projectId, userRole, onUpdate }) => {
     const [sprints, setSprints] = useState([]);
     const [activeSprint, setActiveSprint] = useState(null);
     const [backlogTasks, setBacklogTasks] = useState([]);
@@ -69,6 +69,7 @@ const SprintBoard = ({ projectId, userRole }) => {
             });
             // Background refresh to ensure sync
             fetchBurndown(activeSprint._id);
+            if (onUpdate) onUpdate();
         } catch (err) {
             console.error("Failed to update status", err);
             alert("Sync Failed: Reverting status.");
@@ -138,6 +139,7 @@ const SprintBoard = ({ projectId, userRole }) => {
                 headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
             });
             fetchData();
+            if (onUpdate) onUpdate();
         } catch (err) {
             console.error("Error adding task to sprint", err);
             alert("Failed to add task to sprint");
@@ -158,6 +160,7 @@ const SprintBoard = ({ projectId, userRole }) => {
             });
             setShowCreateModal(false);
             fetchData();
+            if (onUpdate) onUpdate();
         } catch (err) {
             alert(err.response?.data?.error || 'Error creating sprint');
         }

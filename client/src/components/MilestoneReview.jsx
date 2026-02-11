@@ -6,7 +6,7 @@ import { Card } from './ui/card';
 import { Input } from './ui/input';
 import API_URL from '../config';
 
-const MilestoneReview = ({ projectId }) => {
+const MilestoneReview = ({ projectId, onUpdate }) => {
   const [submissions, setSubmissions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [reviewingId, setReviewingId] = useState(null);
@@ -60,6 +60,7 @@ const MilestoneReview = ({ projectId }) => {
       setSubmissions(submissions.filter(s => s._id !== milestoneId));
       setApprovalNotes('');
       alert('Milestone approved successfully! ✓');
+      if (onUpdate) onUpdate();
     } catch (err) {
       console.error('Error approving milestone:', err);
       alert(err.response?.data?.msg || 'Error approving milestone');
@@ -95,6 +96,7 @@ const MilestoneReview = ({ projectId }) => {
       setSubmissions(submissions.filter(s => s._id !== milestoneId));
       setApprovalNotes('');
       alert('Milestone returned for revision');
+      if (onUpdate) onUpdate();
     } catch (err) {
       console.error('Error rejecting milestone:', err);
       alert(err.response?.data?.msg || 'Error processing request');

@@ -955,8 +955,8 @@ const ProjectDetail = () => {
                     <StudentMilestones projectId={id} userId={user?.id} />
                   ) : (
                     <>
-                      <MilestoneManager projectId={id} />
-                      <MilestoneReview projectId={id} />
+                      <MilestoneManager projectId={id} onRefresh={fetchProject} />
+                      <MilestoneReview projectId={id} onUpdate={fetchProject} />
                     </>
                   )}
                 </div>
@@ -964,7 +964,7 @@ const ProjectDetail = () => {
 
               {/* SPRINTS TAB */}
               {activeTab === 'sprints' && (
-                <SprintBoard projectId={id} userRole={user?.role} />
+                <SprintBoard projectId={id} userRole={user?.role} onUpdate={fetchProject} />
               )}
 
               {/* TASKS TAB */}
