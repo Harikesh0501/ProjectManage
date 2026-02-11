@@ -22,12 +22,37 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const loadUser = async () => {
       const token = localStorage.getItem('token');
+      const savedUser = localStorage.getItem('user');
+
       if (token) {
         axios.defaults.headers.common['x-auth-token'] = token;
-        const userData = await fetchUser();
-        setUser(userData);
+        // Optimistic UI: vigorous restoration from cache
+        if (savedUser) {
+          try {
+            setUser(JSON.parse(savedUser));
+            setLoading(false); // Immediate load
+          } catch (e) {
+            console.error('Error parsing saved user', e);
+          }
+        }
+
+        try {
+          const userData = await fetchUser();
+          if (userData) {
+            setUser(userData);
+            // Update cache
+            localStorage.setItem('user', JSON.stringify(userData));
+          } else {
+            // Token invalid
+            logout();
+          }
+        } catch (err) {
+          // Token likely invalid
+          logout();
+        }
+      } else {
+        setLoading(false);
       }
-      setLoading(false);
     };
     loadUser();
   }, [fetchUser]);
@@ -36,6 +61,7 @@ export const AuthProvider = ({ children }) => {
     try {
       const res = await axios.post(`${API_URL}/api/auth/login`, { email, password });
       localStorage.setItem('token', res.data.token);
+      localStorage.setItem('user', JSON.stringify(res.data.user)); // Cache user
       axios.defaults.headers.common['x-auth-token'] = res.data.token;
       setUser(res.data.user);
       return { success: true };
@@ -54,12 +80,14 @@ export const AuthProvider = ({ children }) => {
   const register = async (name, email, password, role, collegeId) => {
     const res = await axios.post(`${API_URL}/api/auth/register`, { name, email, password, role, collegeId });
     localStorage.setItem('token', res.data.token);
+    localStorage.setItem('user', JSON.stringify({ name, email, role })); // Cache user (basic info)
     axios.defaults.headers.common['x-auth-token'] = res.data.token;
     setUser({ name, email, role });
   };
 
   const logout = () => {
     localStorage.removeItem('token');
+    localStorage.removeItem('user'); // Clear cache
     delete axios.defaults.headers.common['x-auth-token'];
     setUser(null);
   };
