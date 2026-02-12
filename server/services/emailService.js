@@ -1,12 +1,70 @@
-const { Resend } = require('resend');
 require('dotenv').config();
 
-// Use Resend HTTP API instead of SMTP (Render blocks SMTP ports)
-const resend = new Resend(process.env.RESEND_API_KEY);
+const Settings = require('../models/Settings');
 
-// Sender address - use Resend's default on free tier
-// If you have a custom domain verified on Resend, change this
-const FROM_EMAIL = 'Project Tracker <onboarding@resend.dev>';
+// Brevo (Sendinblue) HTTP API - works on Render (no SMTP needed)
+const BREVO_API_URL = 'https://api.brevo.com/v3/smtp/email';
+
+// Sender info - uses your verified email on Brevo
+const SENDER = {
+  name: 'Project Tracking System',
+  email: process.env.EMAIL_USER || 'noreply@projecttracker.com'
+};
+
+/**
+ * Send email via Brevo HTTP API
+ * @param {string|string[]} to - Recipient email(s)
+ * @param {string} subject - Email subject
+ * @param {string} html - Email HTML content
+ */
+async function sendEmail(to, subject, html) {
+  try {
+    // Check if email service is enabled in settings
+    const settings = await Settings.findOne();
+    if (settings && settings.services && !settings.services.emailService) {
+      console.warn('⚠️ Email service is disabled by administrator. Email not sent.');
+      return { success: false, message: 'Email service disabled by admin' };
+    }
+
+    if (!process.env.BREVO_API_KEY) {
+      console.warn('⚠️ BREVO_API_KEY not configured. Email service disabled.');
+      return { success: false, message: 'Email service not configured' };
+    }
+
+    // Handle single email or array
+    const recipients = Array.isArray(to)
+      ? to.map(email => ({ email }))
+      : [{ email: to }];
+
+    const response = await fetch(BREVO_API_URL, {
+      method: 'POST',
+      headers: {
+        'api-key': process.env.BREVO_API_KEY,
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify({
+        sender: SENDER,
+        to: recipients,
+        subject,
+        htmlContent: html
+      })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      console.error('❌ Brevo API error:', data);
+      return { success: false, error: data.message || 'Email send failed' };
+    }
+
+    console.log('✅ Email sent via Brevo:', data.messageId);
+    return { success: true, messageId: data.messageId };
+  } catch (error) {
+    console.error('❌ Error sending email:', error);
+    return { success: false, error: error.message };
+  }
+}
 
 // Email templates
 const emailTemplates = {
@@ -114,48 +172,6 @@ const emailTemplates = {
     `
   })
 };
-
-const Settings = require('../models/Settings');
-
-/**
- * Send email function (uses Resend HTTP API)
- * @param {string} to - Recipient email
- * @param {string} subject - Email subject
- * @param {string} html - Email HTML content
- */
-async function sendEmail(to, subject, html) {
-  try {
-    // Check if email service is enabled in settings
-    const settings = await Settings.findOne();
-    if (settings && settings.services && !settings.services.emailService) {
-      console.warn('⚠️ Email service is disabled by administrator. Email not sent.');
-      return { success: false, message: 'Email service disabled by admin' };
-    }
-
-    if (!process.env.RESEND_API_KEY) {
-      console.warn('⚠️ RESEND_API_KEY not configured. Email service disabled.');
-      return { success: false, message: 'Email service not configured' };
-    }
-
-    const { data, error } = await resend.emails.send({
-      from: FROM_EMAIL,
-      to: [to],
-      subject,
-      html
-    });
-
-    if (error) {
-      console.error('❌ Resend error:', error);
-      return { success: false, error: error.message };
-    }
-
-    console.log('✅ Email sent via Resend:', data.id);
-    return { success: true, messageId: data.id };
-  } catch (error) {
-    console.error('❌ Error sending email:', error);
-    return { success: false, error: error.message };
-  }
-}
 
 /**
  * Send milestone added notification
@@ -276,21 +292,12 @@ async function sendMeetingLink(emails, zoomLink, meetingTitle, scheduledDate, pr
   `;
 
   try {
-    // Send email to all recipients via Resend
-    const { data, error } = await resend.emails.send({
-      from: FROM_EMAIL,
-      to: emailList,
-      subject: subject,
-      html: html
-    });
-
-    if (error) {
-      console.error('❌ Resend error sending meeting link:', error);
-      throw new Error(error.message);
+    // Send to all recipients
+    const result = await sendEmail(emailList, subject, html);
+    if (result.success) {
+      console.log(`✅ Meeting link sent to ${emailList.length} recipients`);
     }
-
-    console.log(`✅ Meeting link sent to ${emailList.length} recipients via Resend:`, data.id);
-    return true;
+    return result.success;
   } catch (error) {
     console.error('Error sending meeting link email:', error);
     throw error;
