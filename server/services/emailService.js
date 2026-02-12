@@ -7,7 +7,9 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 // Sender address - change this after verifying your domain on resend.com/domains
 // Free tier: use 'onboarding@resend.dev' (can only send to your own email)
 // With verified domain: use 'noreply@yourdomain.com' (can send to anyone)
-const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || 'Project Tracker <onboarding@resend.dev>';
+const FROM_EMAIL = process.env.EMAIL_FROM
+  ? `Project Tracker <${process.env.EMAIL_FROM}>`
+  : 'Project Tracker <onboarding@resend.dev>';
 
 const Settings = require('../models/Settings');
 
