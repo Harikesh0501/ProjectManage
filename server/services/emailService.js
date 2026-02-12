@@ -1,24 +1,12 @@
-const nodemailer = require('nodemailer');
+const { Resend } = require('resend');
 require('dotenv').config();
 
-// Create transporter using Gmail or your email service
-// Create transporter using Gmail or your email service
-const transporter = nodemailer.createTransport({
-  host: 'smtp.gmail.com',
-  port: 587,
-  secure: false, // use STARTTLS
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASSWORD
-  },
-  tls: {
-    rejectUnauthorized: false
-  },
-  connectionTimeout: 10000,
-  greetingTimeout: 5000,
-  socketTimeout: 10000,
-  family: 4, // Force IPv4
-});
+// Use Resend HTTP API instead of SMTP (Render blocks SMTP ports)
+const resend = new Resend(process.env.RESEND_API_KEY);
+
+// Sender address - use Resend's default on free tier
+// If you have a custom domain verified on Resend, change this
+const FROM_EMAIL = 'Project Tracker <onboarding@resend.dev>';
 
 // Email templates
 const emailTemplates = {
@@ -130,7 +118,7 @@ const emailTemplates = {
 const Settings = require('../models/Settings');
 
 /**
- * Send email function
+ * Send email function (uses Resend HTTP API)
  * @param {string} to - Recipient email
  * @param {string} subject - Email subject
  * @param {string} html - Email HTML content
@@ -144,21 +132,25 @@ async function sendEmail(to, subject, html) {
       return { success: false, message: 'Email service disabled by admin' };
     }
 
-    if (!process.env.EMAIL_USER || !process.env.EMAIL_PASSWORD) {
-      console.warn('⚠️ Email credentials not configured. Email service disabled.');
+    if (!process.env.RESEND_API_KEY) {
+      console.warn('⚠️ RESEND_API_KEY not configured. Email service disabled.');
       return { success: false, message: 'Email service not configured' };
     }
 
-    const mailOptions = {
-      from: process.env.EMAIL_USER,
-      to,
+    const { data, error } = await resend.emails.send({
+      from: FROM_EMAIL,
+      to: [to],
       subject,
       html
-    };
+    });
 
-    const info = await transporter.sendMail(mailOptions);
-    console.log('✅ Email sent:', info.messageId);
-    return { success: true, messageId: info.messageId };
+    if (error) {
+      console.error('❌ Resend error:', error);
+      return { success: false, error: error.message };
+    }
+
+    console.log('✅ Email sent via Resend:', data.id);
+    return { success: true, messageId: data.id };
   } catch (error) {
     console.error('❌ Error sending email:', error);
     return { success: false, error: error.message };
@@ -284,16 +276,20 @@ async function sendMeetingLink(emails, zoomLink, meetingTitle, scheduledDate, pr
   `;
 
   try {
-    // Send email to all recipients
-    const mailOptions = {
-      from: process.env.EMAIL_USER,
-      to: emailList.join(', '),
+    // Send email to all recipients via Resend
+    const { data, error } = await resend.emails.send({
+      from: FROM_EMAIL,
+      to: emailList,
       subject: subject,
       html: html
-    };
+    });
 
-    await transporter.sendMail(mailOptions);
-    console.log(`Meeting link sent to ${emailList.length} recipients`);
+    if (error) {
+      console.error('❌ Resend error sending meeting link:', error);
+      throw new Error(error.message);
+    }
+
+    console.log(`✅ Meeting link sent to ${emailList.length} recipients via Resend:`, data.id);
     return true;
   } catch (error) {
     console.error('Error sending meeting link email:', error);
