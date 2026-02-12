@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const emailService = require('../services/emailService');
 const GitHubRepo = require('../models/GitHubRepo');
 const githubService = require('../services/githubService');
 const GitHubAdvancedService = require('../services/githubAdvancedService');
@@ -288,7 +289,7 @@ router.post('/send-invites', async (req, res) => {
     const { projectId, memberIds, repoUrl } = req.body;
     const User = require('../models/User');
     const Project = require('../models/Project');
-    const nodemailer = require('nodemailer');
+
 
     // Get team members
     const members = await User.find({ _id: { $in: memberIds } });
@@ -357,7 +358,7 @@ router.post('/send-github-invites', async (req, res) => {
   try {
     const { projectId, teamMembersGithub } = req.body;
     const Project = require('../models/Project');
-    const nodemailer = require('nodemailer');
+
 
     const project = await Project.findById(projectId).populate('creator', 'name email');
 
