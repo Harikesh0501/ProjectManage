@@ -1,17 +1,65 @@
-const { Resend } = require('resend');
 require('dotenv').config();
 
-// Use Resend HTTP API (Render blocks SMTP ports)
-const resend = new Resend(process.env.RESEND_API_KEY);
-
-// Sender address - change this after verifying your domain on resend.com/domains
-// Free tier: use 'onboarding@resend.dev' (can only send to your own email)
-// With verified domain: use 'noreply@yourdomain.com' (can send to anyone)
-const FROM_EMAIL = process.env.EMAIL_FROM
-  ? `Project Tracker <${process.env.EMAIL_FROM}>`
-  : 'Project Tracker <onboarding@resend.dev>';
-
 const Settings = require('../models/Settings');
+
+// Brevo (Sendinblue) HTTP API - works on Render (no SMTP needed, no domain needed)
+const BREVO_API_URL = 'https://api.brevo.com/v3/smtp/email';
+
+// Sender info
+const SENDER = {
+  name: 'Project Tracking System',
+  email: process.env.EMAIL_FROM || process.env.EMAIL_USER || 'noreply@projecttracker.com'
+};
+
+/**
+ * Send email via Brevo HTTP API
+ */
+async function sendEmail(to, subject, html) {
+  try {
+    const settings = await Settings.findOne();
+    if (settings && settings.services && !settings.services.emailService) {
+      console.warn('⚠️ Email service is disabled by administrator.');
+      return { success: false, message: 'Email service disabled by admin' };
+    }
+
+    if (!process.env.BREVO_API_KEY) {
+      console.warn('⚠️ BREVO_API_KEY not configured.');
+      return { success: false, message: 'Email service not configured' };
+    }
+
+    const recipients = Array.isArray(to)
+      ? to.map(email => ({ email }))
+      : [{ email: to }];
+
+    const response = await fetch(BREVO_API_URL, {
+      method: 'POST',
+      headers: {
+        'api-key': process.env.BREVO_API_KEY,
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify({
+        sender: SENDER,
+        to: recipients,
+        subject,
+        htmlContent: html
+      })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      console.error('❌ Brevo API error:', data);
+      return { success: false, error: data.message || 'Email send failed' };
+    }
+
+    console.log('✅ Email sent via Brevo:', data.messageId);
+    return { success: true, messageId: data.messageId };
+  } catch (error) {
+    console.error('❌ Error sending email:', error);
+    return { success: false, error: error.message };
+  }
+}
 
 // Email templates
 const emailTemplates = {
@@ -119,44 +167,6 @@ const emailTemplates = {
     `
   })
 };
-
-/**
- * Send email via Resend HTTP API
- */
-async function sendEmail(to, subject, html) {
-  try {
-    const settings = await Settings.findOne();
-    if (settings && settings.services && !settings.services.emailService) {
-      console.warn('⚠️ Email service is disabled by administrator.');
-      return { success: false, message: 'Email service disabled by admin' };
-    }
-
-    if (!process.env.RESEND_API_KEY) {
-      console.warn('⚠️ RESEND_API_KEY not configured.');
-      return { success: false, message: 'Email service not configured' };
-    }
-
-    const recipients = Array.isArray(to) ? to : [to];
-
-    const { data, error } = await resend.emails.send({
-      from: FROM_EMAIL,
-      to: recipients,
-      subject,
-      html
-    });
-
-    if (error) {
-      console.error('❌ Resend error:', error);
-      return { success: false, error: error.message };
-    }
-
-    console.log('✅ Email sent via Resend:', data.id);
-    return { success: true, messageId: data.id };
-  } catch (error) {
-    console.error('❌ Error sending email:', error);
-    return { success: false, error: error.message };
-  }
-}
 
 async function sendMilestoneAddedEmail(studentEmail, studentName, milestoneTitle, dueDate) {
   const { subject, html } = emailTemplates.milestoneAdded(studentName, milestoneTitle, dueDate);
