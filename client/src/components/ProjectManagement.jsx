@@ -484,9 +484,9 @@ const ProjectManagement = () => {
                   <Label className="text-slate-400 text-xs uppercase tracking-wider">Codename</Label>
                   <Input
                     value={newProject.title}
-                    onChange={(e) => setNewProject({ ...newProject, title: e.target.value })}
+                    onChange={(e) => setNewProject({ ...newProject, title: e.target.value.toUpperCase() })}
                     placeholder="Project Title"
-                    className="dark:bg-slate-900/50 bg-slate-50 dark:border-white/10 border-slate-200 dark:text-white text-slate-900 focus:border-cyan-500/50"
+                    className="dark:bg-slate-900/50 bg-slate-50 dark:border-white/10 border-slate-200 dark:text-white text-slate-900 focus:border-cyan-500/50 uppercase"
                     required
                   />
                 </div>

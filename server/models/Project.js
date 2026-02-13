@@ -27,4 +27,22 @@ const ProjectSchema = new mongoose.Schema({
   teamSize: { type: Number, default: 3, min: 1, max: 10 },
 }, { timestamps: true });
 
+// Enforce uppercase title
+// Enforce uppercase title
+ProjectSchema.pre('save', async function () {
+  if (this.title) {
+    this.title = this.title.toUpperCase();
+  }
+});
+
+ProjectSchema.pre('findOneAndUpdate', async function () {
+  const update = this.getUpdate();
+  if (update.title) {
+    update.title = update.title.toUpperCase();
+  }
+  if (update.$set && update.$set.title) {
+    update.$set.title = update.$set.title.toUpperCase();
+  }
+});
+
 module.exports = mongoose.model('Project', ProjectSchema);
