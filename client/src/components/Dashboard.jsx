@@ -141,7 +141,7 @@ const Dashboard = ({ setIsDarkMode, isDarkMode }) => {
 
       try {
         const projectsData = await fetchProjects();
-        setProjects(projectsData);
+        setProjects(Array.isArray(projectsData) ? projectsData : []);
         const mentorsData = await fetchMentors();
         setMentors(mentorsData);
       } catch (error) {
@@ -161,7 +161,7 @@ const Dashboard = ({ setIsDarkMode, isDarkMode }) => {
   }, [user, navigate, fetchProjects, fetchMentors]);
 
 
-  const filteredProjects = (selectedMentor && selectedMentor !== 'all') ? projects.filter(p => p.mentor && p.mentor._id === selectedMentor) : projects;
+  const filteredProjects = Array.isArray(projects) ? ((selectedMentor && selectedMentor !== 'all') ? projects.filter(p => p.mentor && p.mentor._id === selectedMentor) : projects) : [];
 
   const handleTeamMemberCountChange = (count) => {
     setTeamMemberCount(count);
@@ -561,7 +561,7 @@ const Dashboard = ({ setIsDarkMode, isDarkMode }) => {
           </div>
         ) : (
           <div className={`grid gap-6 sm:gap-8 ${viewMode === 'grid' ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3' : 'grid-cols-1'}`}>
-            {filteredProjects.map((project) => (
+            {Array.isArray(filteredProjects) && filteredProjects.map((project) => (
               viewMode === 'grid' ? (
                 <ProjectTiltCard
                   key={project._id}
