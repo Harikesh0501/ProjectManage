@@ -245,37 +245,15 @@ const Register = () => {
                 </div>
               </div>
 
-              <div className="grid md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label className="text-slate-300 ml-1">Role</Label>
-                  <Select value={role} onValueChange={setRole}>
-                    <SelectTrigger className="pl-4 h-11 bg-slate-950/50 border-slate-800 text-slate-100 focus:border-pink-500/50 focus:ring-pink-500/20 rounded-xl">
-                      <SelectValue placeholder="Select Role" />
-                    </SelectTrigger>
-                    <SelectContent className="bg-slate-900 border-slate-700 text-white">
-                      <SelectItem value="Student">Student</SelectItem>
-                      <SelectItem value="Mentor">Mentor</SelectItem>
-                      <SelectItem value="Admin">Admin</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                {role === 'Student' && (
-                  <motion.div
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    className="space-y-2"
-                  >
-                    <Label className="text-slate-300 ml-1">College ID</Label>
-                    <Input
-                      value={collegeId}
-                      onChange={(e) => setCollegeId(e.target.value)}
-                      placeholder="EX123456"
-                      required
-                      className="h-11 bg-slate-950/50 border-slate-800 text-slate-100 placeholder:text-slate-600 focus:border-pink-500/50 focus:ring-pink-500/20 rounded-xl"
-                    />
-                  </motion.div>
-                )}
+              <div className="space-y-2">
+                <Label className="text-slate-300 ml-1">College ID</Label>
+                <Input
+                  value={collegeId}
+                  onChange={(e) => setCollegeId(e.target.value)}
+                  placeholder="EX123456"
+                  required
+                  className="pl-4 h-11 bg-slate-950/50 border-slate-800 text-slate-100 placeholder:text-slate-600 focus:border-pink-500/50 focus:ring-pink-500/20 rounded-xl"
+                />
               </div>
 
               <div className="space-y-2">
