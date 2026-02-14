@@ -134,7 +134,7 @@ router.get('/profile', auth, async (req, res) => {
 
 // Update profile
 router.put('/profile', auth, async (req, res) => {
-  const { name, bio, skills, experience, education, expertise, availability, collegeId } = req.body;
+  const { name, bio, skills, experience, education, expertise, availability, collegeId, company, linkedin, github } = req.body;
   try {
     const updateData = {};
     if (name) updateData.name = name;
@@ -145,6 +145,9 @@ router.put('/profile', auth, async (req, res) => {
     if (collegeId !== undefined) updateData.collegeId = collegeId;
     if (expertise) updateData.expertise = expertise;
     if (availability !== undefined) updateData.availability = availability;
+    if (company !== undefined) updateData.company = company;
+    if (linkedin !== undefined) updateData.linkedin = linkedin;
+    if (github !== undefined) updateData.github = github;
 
     const user = await User.findByIdAndUpdate(req.user.id, updateData, { new: true }).select('-password');
     res.json(user);

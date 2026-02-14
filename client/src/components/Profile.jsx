@@ -363,6 +363,51 @@ const Profile = () => {
                         </>
                       )}
 
+                      {user.role === 'Mentor' && (
+                        <>
+                          <div className="space-y-2">
+                            <Label className="dark:text-slate-400 text-slate-500 text-xs uppercase tracking-wider">Company / Organization</Label>
+                            <Input
+                              value={profile.company || ''}
+                              onChange={(e) => setProfile({ ...profile, company: e.target.value })}
+                              disabled={!isEditing}
+                              placeholder="Google, Microsoft, Freelance..."
+                              className="dark:bg-black/20 bg-slate-50 dark:border-white/10 border-slate-200 dark:text-white text-slate-900 h-12"
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label className="dark:text-slate-400 text-slate-500 text-xs uppercase tracking-wider">Years of Experience</Label>
+                            <Input
+                              value={profile.experience || ''}
+                              onChange={(e) => setProfile({ ...profile, experience: e.target.value })}
+                              disabled={!isEditing}
+                              placeholder="ex. 5 Years, 10+ Years..."
+                              className="dark:bg-black/20 bg-slate-50 dark:border-white/10 border-slate-200 dark:text-white text-slate-900 h-12"
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label className="dark:text-slate-400 text-slate-500 text-xs uppercase tracking-wider">LinkedIn Profile</Label>
+                            <Input
+                              value={profile.linkedin || ''}
+                              onChange={(e) => setProfile({ ...profile, linkedin: e.target.value })}
+                              disabled={!isEditing}
+                              placeholder="https://linkedin.com/in/yourprofile"
+                              className="dark:bg-black/20 bg-slate-50 dark:border-white/10 border-slate-200 dark:text-white text-slate-900 h-12"
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label className="dark:text-slate-400 text-slate-500 text-xs uppercase tracking-wider">GitHub Profile</Label>
+                            <Input
+                              value={profile.github || ''}
+                              onChange={(e) => setProfile({ ...profile, github: e.target.value })}
+                              disabled={!isEditing}
+                              placeholder="https://github.com/yourusername"
+                              className="dark:bg-black/20 bg-slate-50 dark:border-white/10 border-slate-200 dark:text-white text-slate-900 h-12"
+                            />
+                          </div>
+                        </>
+                      )}
+
                     </div>
 
                     {/* Right Form Column */}
