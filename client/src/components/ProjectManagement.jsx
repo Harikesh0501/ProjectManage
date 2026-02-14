@@ -277,15 +277,13 @@ const ProjectManagement = () => {
   };
 
   return (
-    <div className="w-full space-y-8 p-4 md:p-8">
-      {/* Controls Section - Cockpit Style */}
+    <div className="w-full space-y-8">
+      {/* Controls Section - Sticky Header */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="dark:bg-[#0A101F]/60 bg-white border dark:border-white/5 border-slate-200 rounded-3xl p-6 backdrop-blur-xl relative overflow-hidden shadow-sm"
+        className="sticky top-0 z-20 dark:bg-[#050B14]/95 bg-slate-50/95 backdrop-blur-xl border-b dark:border-white/5 border-slate-200 py-4 px-4 md:px-8 shadow-sm"
       >
-        <div className="absolute top-0 right-0 w-64 h-64 bg-cyan-500/5 dark:bg-cyan-500/5 rounded-full blur-3xl -mr-32 -mt-32 pointer-events-none"></div>
-
         <div className="flex flex-col md:flex-row gap-6 relative z-10">
           {/* Search Bar */}
           <div className="flex-1 relative group">
@@ -297,7 +295,7 @@ const ProjectManagement = () => {
               placeholder="Search active missions..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full dark:bg-[#050B14]/80 bg-slate-50 dark:border-white/10 border-slate-200 rounded-xl pl-11 pr-4 py-3 dark:text-white text-slate-900 placeholder-slate-500 focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/20 transition-all font-mono"
+              className="w-full dark:bg-slate-900/50 bg-white dark:border-white/10 border-slate-200 rounded-xl pl-11 pr-4 py-3 dark:text-white text-slate-900 placeholder-slate-500 focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/20 transition-all font-mono"
             />
           </div>
 
@@ -310,7 +308,7 @@ const ProjectManagement = () => {
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
-                className="appearance-none dark:bg-[#050B14]/80 bg-slate-50 dark:border-white/10 border-slate-200 rounded-xl pl-10 pr-8 py-3 dark:text-white text-slate-900 focus:outline-none focus:border-cyan-500/50 cursor-pointer min-w-[140px]"
+                className="appearance-none dark:bg-slate-900/50 bg-white dark:border-white/10 border-slate-200 rounded-xl pl-10 pr-8 py-3 dark:text-white text-slate-900 focus:outline-none focus:border-cyan-500/50 cursor-pointer min-w-[140px]"
               >
                 <option value="">All Status</option>
                 <option value="Active">Active</option>
@@ -344,109 +342,109 @@ const ProjectManagement = () => {
       </motion.div>
 
       {/* Projects Grid */}
-      {loading ? (
-        <div className="flex flex-col items-center justify-center py-20 text-slate-500">
-          <div className="w-16 h-16 border-4 border-cyan-500/20 border-t-cyan-500 rounded-full animate-spin mb-4"></div>
-          <p className="font-mono text-sm tracking-widest uppercase">Scanning Database...</p>
-        </div>
-      ) : error ? (
-        <div className="bg-red-500/10 border border-red-500/20 rounded-2xl p-6 text-center text-red-400">
-          <AlertCircle className="w-12 h-12 mx-auto mb-3 opacity-50" />
-          <p>{error}</p>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 gap-4">
-          <AnimatePresence>
-            {filteredProjects.map((p, index) => (
-              <motion.div
-                key={p._id}
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: 20 }}
-                transition={{ delay: index * 0.05 }}
-                onClick={() => navigate(`/project/${p._id}`)}
-                className="group relative dark:bg-[#0A101F]/40 bg-white border dark:border-white/5 border-slate-200 hover:border-cyan-500/50 rounded-2xl p-5 cursor-pointer backdrop-blur-sm overflow-hidden transition-all duration-300 hover:shadow-lg hover:shadow-cyan-500/5"
-              >
-                {/* Hover Glow */}
-                <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/0 via-cyan-500/5 to-purple-500/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+      <div className="px-4 md:px-8 pb-20">
+        {loading ? (
+          <div className="flex flex-col items-center justify-center py-20 text-slate-500">
+            <div className="w-16 h-16 border-4 border-cyan-500/20 border-t-cyan-500 rounded-full animate-spin mb-4"></div>
+            <p className="font-mono text-sm tracking-widest uppercase">Scanning Database...</p>
+          </div>
+        ) : error ? (
+          <div className="bg-red-500/10 border border-red-500/20 rounded-2xl p-6 text-center text-red-400">
+            <AlertCircle className="w-12 h-12 mx-auto mb-3 opacity-50" />
+            <p>{error}</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 gap-4">
+            <AnimatePresence>
+              {filteredProjects.map((p, index) => (
+                <motion.div
+                  key={p._id}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: 20 }}
+                  transition={{ delay: index * 0.05 }}
+                  onClick={() => navigate(`/project/${p._id}`)}
+                  className="group relative dark:bg-[#0A101F]/40 bg-white border dark:border-white/5 border-slate-200 hover:border-cyan-500/50 rounded-2xl p-5 cursor-pointer backdrop-blur-sm overflow-hidden transition-all duration-300 hover:shadow-lg hover:shadow-cyan-500/5"
+                >
+                  {/* Hover Glow */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/0 via-cyan-500/5 to-purple-500/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
 
-                <div className="flex flex-col md:flex-row items-center gap-6 relative z-10">
-                  {/* Icon/Logo Placeholder */}
-                  <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-slate-800 to-slate-900 border border-white/5 flex items-center justify-center shadow-inner shrink-0 group-hover:scale-105 transition-transform duration-300">
-                    <Zap className={`w-8 h-8 ${p.status === 'Active' ? 'text-cyan-400' : 'text-slate-600'} transition-colors`} />
-                  </div>
-
-                  {/* Main Info */}
-                  <div className="flex-1 min-w-0 text-center md:text-left">
-                    <div className="flex flex-wrap items-center justify-center md:justify-start gap-3 mb-1">
-                      <h3 className="text-xl font-bold dark:text-white text-slate-900 group-hover:text-cyan-600 dark:group-hover:text-cyan-400 transition-colors truncate">{p.title}</h3>
-                      <StatusBadge status={p.status} size="xs" />
-                      {p.githubRepo && <Github className="w-4 h-4 text-slate-500" />}
+                  <div className="flex flex-col md:flex-row items-center gap-6 relative z-10">
+                    {/* Icon/Logo Placeholder */}
+                    <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-slate-800 to-slate-900 border border-white/5 flex items-center justify-center shadow-inner shrink-0 group-hover:scale-105 transition-transform duration-300">
+                      <Zap className={`w-8 h-8 ${p.status === 'Active' ? 'text-cyan-400' : 'text-slate-600'} transition-colors`} />
                     </div>
-                    <p className="text-slate-400 text-sm line-clamp-1 mb-3">{p.description}</p>
 
-                    {/* Metrics Mini-Row */}
-                    <div className="flex flex-wrap items-center justify-center md:justify-start gap-4 text-xs text-slate-500 font-mono">
-                      <div className="flex items-center gap-1.5">
-                        <Users className="w-3.5 h-3.5" />
-                        <span>{(p.teamMembers?.length || 0) + (p.creator ? 1 : 0) + (p.mentor ? 1 : 0)} Operatives</span>
+                    {/* Main Info */}
+                    <div className="flex-1 min-w-0 text-center md:text-left">
+                      <div className="flex flex-wrap items-center justify-center md:justify-start gap-3 mb-1">
+                        <h3 className="text-xl font-bold dark:text-white text-slate-900 group-hover:text-cyan-600 dark:group-hover:text-cyan-400 transition-colors truncate">{p.title}</h3>
+                        <StatusBadge status={p.status} size="xs" />
+                        {p.githubRepo && <Github className="w-4 h-4 text-slate-500" />}
                       </div>
-                      <div className="flex items-center gap-1.5">
-                        <Calendar className="w-3.5 h-3.5" />
-                        <span>{p.startDate ? new Date(p.startDate).toLocaleDateString() : 'TBD'}</span>
+                      <p className="text-slate-400 text-sm line-clamp-1 mb-3">{p.description}</p>
+
+                      {/* Metrics Mini-Row */}
+                      <div className="flex flex-wrap items-center justify-center md:justify-start gap-4 text-xs text-slate-500 font-mono">
+                        <div className="flex items-center gap-1.5">
+                          <Users className="w-3.5 h-3.5" />
+                          <span>{(p.teamMembers?.length || 0) + (p.creator ? 1 : 0) + (p.mentor ? 1 : 0)} Operatives</span>
+                        </div>
+                        <div className="flex items-center gap-1.5">
+                          <Calendar className="w-3.5 h-3.5" />
+                          <span>{p.startDate ? new Date(p.startDate).toLocaleDateString() : 'TBD'}</span>
+                        </div>
+                        <div className="flex items-center gap-1.5">
+                          <Activity className="w-3.5 h-3.5" />
+                          <span>{p.progress || 0}% Complete</span>
+                        </div>
                       </div>
-                      <div className="flex items-center gap-1.5">
-                        <Activity className="w-3.5 h-3.5" />
-                        <span>{p.progress || 0}% Complete</span>
+                    </div>
+
+                    {/* Actions & Progress */}
+                    <div className="flex flex-col items-center md:items-end gap-3 w-full md:w-auto mt-4 md:mt-0">
+                      <div className="flex items-center gap-2">
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          className="text-slate-400 hover:text-cyan-600 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5"
+                          onClick={(e) => { e.stopPropagation(); navigate(`/project/${p._id}`); }}
+                        >
+                          Details <ChevronRight className="w-4 h-4 ml-1" />
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          className="text-red-400/50 hover:text-red-400 hover:bg-red-500/10"
+                          onClick={(e) => { e.stopPropagation(); handleDeleteProject(p._id); }}
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      </div>
+
+                      {/* Mini Progress Bar */}
+                      <div className="w-full md:w-32 h-1.5 bg-slate-800 rounded-full overflow-hidden">
+                        <div
+                          className="h-full bg-gradient-to-r from-cyan-500 to-blue-500 rounded-full"
+                          style={{ width: `${p.progress || 0}%` }}
+                        />
                       </div>
                     </div>
                   </div>
+                </motion.div>
+              ))}
+            </AnimatePresence>
 
-                  {/* Actions & Progress */}
-                  <div className="flex flex-col items-center md:items-end gap-3 w-full md:w-auto mt-4 md:mt-0">
-                    <div className="flex items-center gap-2">
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        className="text-slate-400 hover:text-cyan-600 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5"
-                        onClick={(e) => { e.stopPropagation(); navigate(`/project/${p._id}`); }}
-                      >
-                        Details <ChevronRight className="w-4 h-4 ml-1" />
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        className="text-red-400/50 hover:text-red-400 hover:bg-red-500/10"
-                        onClick={(e) => { e.stopPropagation(); handleDeleteProject(p._id); }}
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
-                    </div>
-
-                    {/* Mini Progress Bar */}
-                    <div className="w-full md:w-32 h-1.5 bg-slate-800 rounded-full overflow-hidden">
-                      <div
-                        className="h-full bg-gradient-to-r from-cyan-500 to-blue-500 rounded-full"
-                        style={{ width: `${p.progress || 0}%` }}
-                      />
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
-            ))}
-          </AnimatePresence>
-
-          {!loading && !error && filteredProjects.length === 0 && (
-            <div className="text-center py-20 bg-white/5 border border-white/5 rounded-3xl border-dashed">
-              <Search className="w-12 h-12 text-slate-600 mx-auto mb-4" />
-              <h3 className="text-lg font-bold text-white mb-2">No missions found</h3>
-              <p className="text-slate-500">Initialize a new project to get started.</p>
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* Create Project Modal - Holographic */}
+            {!loading && !error && filteredProjects.length === 0 && (
+              <div className="text-center py-20 bg-white/5 border border-white/5 rounded-3xl border-dashed">
+                <Search className="w-12 h-12 text-slate-600 mx-auto mb-4" />
+                <h3 className="text-lg font-bold text-white mb-2">No missions found</h3>
+                <p className="text-slate-500">Initialize a new project to get started.</p>
+              </div>
+            )}
+          </div>
+        )}
+      </div>   {/* Create Project Modal - Holographic */}
       <AnimatePresence>
         {showCreateProject && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
