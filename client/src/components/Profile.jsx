@@ -29,6 +29,7 @@ const Profile = () => {
   const navigate = useNavigate();
   const fileInputRef = useRef(null);
   const resumeInputRef = useRef(null);
+  const [inputValues, setInputValues] = useState({ skills: '', expertise: '' });
 
   const handleLogout = () => {
     logout();
@@ -69,6 +70,10 @@ const Profile = () => {
       else {
         const profileData = await fetchProfile();
         setProfile(profileData);
+        setInputValues({
+          skills: profileData.skills ? profileData.skills.join(', ') : '',
+          expertise: profileData.expertise ? profileData.expertise.join(', ') : ''
+        });
         if (user.role === 'Mentor') {
           const mentorData = await fetchMentor();
           setMentorData(mentorData);
@@ -383,8 +388,12 @@ const Profile = () => {
                       <div className="space-y-2">
                         <Label className="dark:text-slate-400 text-slate-500 text-xs uppercase tracking-wider">Skills & Tech Stack</Label>
                         <Input
-                          value={profile.skills ? profile.skills.join(', ') : ''}
-                          onChange={(e) => setProfile({ ...profile, skills: e.target.value.split(',').map(s => s.trim()).filter(Boolean) })}
+                          value={inputValues.skills}
+                          onChange={(e) => {
+                            const val = e.target.value;
+                            setInputValues(prev => ({ ...prev, skills: val }));
+                            setProfile(prev => ({ ...prev, skills: val.split(',').map(s => s.trim()).filter(Boolean) }));
+                          }}
                           disabled={!isEditing}
                           placeholder="React, Node.js, Python..."
                           className="dark:bg-black/20 bg-slate-50 dark:border-white/10 border-slate-200 dark:text-white text-slate-900 h-12"
@@ -412,8 +421,12 @@ const Profile = () => {
                         <div className="space-y-2">
                           <Label className="dark:text-slate-400 text-slate-500 text-xs uppercase tracking-wider">Expertise Areas</Label>
                           <Input
-                            value={profile.expertise ? profile.expertise.join(', ') : ''}
-                            onChange={(e) => setProfile({ ...profile, expertise: e.target.value.split(',').map(s => s.trim()).filter(Boolean) })}
+                            value={inputValues.expertise}
+                            onChange={(e) => {
+                              const val = e.target.value;
+                              setInputValues(prev => ({ ...prev, expertise: val }));
+                              setProfile(prev => ({ ...prev, expertise: val.split(',').map(s => s.trim()).filter(Boolean) }));
+                            }}
                             disabled={!isEditing}
                             className="dark:bg-black/20 bg-slate-50 dark:border-white/10 border-slate-200 dark:text-white text-slate-900 h-12"
                           />
