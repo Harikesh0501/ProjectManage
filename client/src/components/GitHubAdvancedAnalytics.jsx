@@ -301,27 +301,27 @@ const GitHubAdvancedAnalytics = ({ projectId }) => {
       {activeTab === 'deployments' && (
         <div className="space-y-6">
           {dashboardData.deployments.hasDeployments ? (
-            <div className="space-y-4">
+            <div className="space-y-4 max-h-[600px] overflow-y-auto pr-2 custom-scrollbar">
               {dashboardData.deployments.environments.map((env, index) => (
                 <motion.div
                   key={index}
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: index * 0.1 }}
-                  className="dark:bg-slate-900 bg-white border dark:border-violet-900 border-violet-100 rounded-xl p-4 flex items-center justify-between hover:border-violet-300 transition-colors shadow-sm"
+                  className="dark:bg-slate-900 bg-white border dark:border-violet-900 border-violet-100 rounded-xl p-4 flex flex-col md:flex-row md:items-center justify-between hover:border-violet-300 transition-colors shadow-sm gap-4 min-w-[300px]"
                 >
                   <div className="flex items-center gap-4">
                     <div className={`p-2 rounded-lg ${env.status === 'success' ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400' : 'bg-red-500/10 text-red-600 dark:text-red-400'}`}>
                       <Zap className="w-5 h-5" />
                     </div>
-                    <div>
-                      <h4 className="dark:text-white text-violet-900 font-bold">{env.environment}</h4>
-                      <p className="dark:text-slate-400 text-slate-600 text-sm flex items-center gap-2">
-                        <GitBranch className="w-3 h-3" /> {env.ref}
+                    <div className="min-w-0 flex-1">
+                      <h4 className="dark:text-white text-violet-900 font-bold truncate">{env.environment}</h4>
+                      <p className="dark:text-slate-400 text-slate-600 text-sm flex items-center gap-2 truncate">
+                        <GitBranch className="w-3 h-3 flex-shrink-0" /> <span className="truncate">{env.ref}</span>
                       </p>
                     </div>
                   </div>
-                  <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${env.status === 'success' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' :
+                  <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider w-fit ${env.status === 'success' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' :
                     env.status === 'failure' ? 'bg-red-500/10 text-red-400 border border-red-500/20' :
                       'bg-yellow-500/10 text-yellow-400 border border-yellow-500/20'
                     }`}>
