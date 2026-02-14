@@ -152,27 +152,35 @@ const MentorRubric = ({ projectId, user }) => {
                         <div className="space-y-3">
                             <label className="block dark:text-slate-400 text-slate-600 text-sm">Criteria List</label>
                             {criteria.map((c, idx) => (
-                                <div key={idx} className="flex gap-2 items-start">
+                                <div key={idx} className="flex flex-col sm:flex-row gap-2 items-start sm:items-center">
                                     <input
-                                        className="flex-1 dark:bg-slate-900 bg-slate-50 dark:text-white text-slate-900 rounded p-2 border dark:border-slate-700 border-slate-200 text-sm"
+                                        className="w-full sm:flex-1 dark:bg-slate-900 bg-slate-50 dark:text-white text-slate-900 rounded p-2 border dark:border-slate-700 border-slate-200 text-sm"
                                         placeholder="Criteria Name"
                                         value={c.name}
                                         onChange={e => handleCriteriaChange(idx, 'name', e.target.value)}
                                     />
-                                    <input
-                                        className="w-20 dark:bg-slate-900 bg-slate-50 dark:text-white text-slate-900 rounded p-2 border dark:border-slate-700 border-slate-200 text-sm"
-                                        type="number"
-                                        placeholder="Weight"
-                                        value={c.weight}
-                                        onChange={e => handleCriteriaChange(idx, 'weight', parseFloat(e.target.value))}
-                                    />
-                                    <input
-                                        className="w-20 dark:bg-slate-900 bg-slate-50 dark:text-white text-slate-900 rounded p-2 border dark:border-slate-700 border-slate-200 text-sm"
-                                        type="number"
-                                        placeholder="Max"
-                                        value={c.maxScore}
-                                        onChange={e => handleCriteriaChange(idx, 'maxScore', parseFloat(e.target.value))}
-                                    />
+                                    <div className="flex gap-2 w-full sm:w-auto">
+                                        <input
+                                            className="w-full sm:w-20 dark:bg-slate-900 bg-slate-50 dark:text-white text-slate-900 rounded p-2 border dark:border-slate-700 border-slate-200 text-sm"
+                                            type="number"
+                                            placeholder="Weight"
+                                            value={c.weight}
+                                            onChange={e => handleCriteriaChange(idx, 'weight', parseFloat(e.target.value))}
+                                        />
+                                        <input
+                                            className="w-full sm:w-20 dark:bg-slate-900 bg-slate-50 dark:text-white text-slate-900 rounded p-2 border dark:border-slate-700 border-slate-200 text-sm"
+                                            type="number"
+                                            placeholder="Max"
+                                            value={c.maxScore}
+                                            onChange={e => handleCriteriaChange(idx, 'maxScore', parseFloat(e.target.value))}
+                                        />
+                                    </div>
+                                    <button onClick={() => {
+                                        const newCriteria = criteria.filter((_, i) => i !== idx);
+                                        setCriteria(newCriteria);
+                                    }} className="p-2 text-red-400 hover:text-red-300 self-end sm:self-center">
+                                        <Trash2 className="w-4 h-4" />
+                                    </button>
                                 </div>
                             ))}
                             <button

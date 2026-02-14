@@ -217,7 +217,7 @@ const MilestoneReview = ({ projectId, onUpdate }) => {
                       className="inline-flex items-center gap-2 px-4 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg hover:from-purple-600 hover:to-pink-600 transition-all font-medium"
                     >
                       <ExternalLink size={18} />
-                      {submission.submissionGithubLink}
+                      <span className="hidden md:inline truncate max-w-md">{submission.submissionGithubLink}</span>
                     </a>
 
                     {/* AI Review Button */}
@@ -226,8 +226,8 @@ const MilestoneReview = ({ projectId, onUpdate }) => {
                       disabled={aiReviewLoading === submission._id}
                       className="ml-3 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600"
                     >
-                      <Sparkles size={18} className="mr-2" />
-                      {aiReviewLoading === submission._id ? 'Analyzing...' : 'AI Review'}
+                      <Sparkles size={18} className="md:mr-2" />
+                      <span className="hidden md:inline">{aiReviewLoading === submission._id ? 'Analyzing...' : 'AI Review'}</span>
                     </Button>
                   </div>
                 </div>
@@ -343,7 +343,7 @@ const MilestoneReview = ({ projectId, onUpdate }) => {
                           className="bg-green-500 hover:bg-green-600 text-white flex items-center gap-2"
                         >
                           <CheckCircle size={18} />
-                          Approve
+                          <span className="hidden md:inline">Approve</span>
                         </Button>
                       )}
                       {actionType === 'reject' && (
@@ -352,7 +352,7 @@ const MilestoneReview = ({ projectId, onUpdate }) => {
                           className="bg-red-500 hover:bg-red-600 text-white flex items-center gap-2"
                         >
                           <XCircle size={18} />
-                          Return for Revision
+                          <span className="hidden md:inline">Return for Revision</span>
                         </Button>
                       )}
                     </div>
@@ -367,7 +367,7 @@ const MilestoneReview = ({ projectId, onUpdate }) => {
                       className="bg-red-500 hover:bg-red-600 text-white flex items-center gap-2"
                     >
                       <XCircle size={18} />
-                      Return for Revision
+                      <span className="hidden md:inline">Return for Revision</span>
                     </Button>
                     <Button
                       onClick={() => {
@@ -377,7 +377,7 @@ const MilestoneReview = ({ projectId, onUpdate }) => {
                       className="bg-green-500 hover:bg-green-600 text-white flex items-center gap-2"
                     >
                       <CheckCircle size={18} />
-                      Approve
+                      <span className="hidden md:inline">Approve</span>
                     </Button>
                   </div>
                 )}

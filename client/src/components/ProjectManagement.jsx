@@ -467,10 +467,10 @@ const ProjectManagement = () => {
               {/* Modal Glow */}
               <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-cyan-500 via-blue-500 to-purple-500"></div>
 
-              <div className="flex justify-between items-center mb-8">
-                <h2 className="text-2xl font-bold dark:text-white text-slate-900 flex items-center gap-3">
+              <div className="flex justify-between items-center mb-6 md:mb-8">
+                <h2 className="text-xl md:text-2xl font-bold dark:text-white text-slate-900 flex items-center gap-3">
                   <div className="p-2 bg-cyan-500/10 rounded-lg">
-                    <Plus className="w-6 h-6 text-cyan-600 dark:text-cyan-400" />
+                    <Plus className="w-5 h-5 md:w-6 md:h-6 text-cyan-600 dark:text-cyan-400" />
                   </div>
                   Initialize New Mission
                 </h2>
@@ -534,7 +534,7 @@ const ProjectManagement = () => {
                   </div>
                 )}
 
-                <div className="grid grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <Label className="text-slate-400 text-xs uppercase tracking-wider">Start Date</Label>
                     <Input
@@ -560,17 +560,17 @@ const ProjectManagement = () => {
 
                 {/* Team Size */}
                 <div className="space-y-4 pt-2 border-t border-white/5">
-                  <div className="flex justify-between items-center">
+                  <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4 sm:gap-0">
                     <h3 className="text-sm font-bold dark:text-white text-slate-900 uppercase tracking-wider">Squadron Size</h3>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-end">
                       <Label className="text-xs text-slate-500">Members:</Label>
-                      <div className="flex gap-1">
+                      <div className="flex gap-1 overflow-x-auto pb-1 sm:pb-0 scrollbar-hide">
                         {[1, 2, 3, 4, 5, 6].map(n => (
                           <button
                             key={n}
                             type="button"
                             onClick={() => setTeamMemberCount(n)}
-                            className={`w-7 h-7 rounded-lg flex items-center justify-center text-xs font-bold transition-all ${teamMemberCount === n ? 'bg-cyan-600 text-white shadow-lg shadow-cyan-500/30' : 'dark:bg-slate-800 bg-slate-200 dark:text-slate-400 text-slate-600 hover:bg-slate-700 hover:text-white'}`}
+                            className={`w-7 h-7 flex-shrink-0 rounded-lg flex items-center justify-center text-xs font-bold transition-all ${teamMemberCount === n ? 'bg-cyan-600 text-white shadow-lg shadow-cyan-500/30' : 'dark:bg-slate-800 bg-slate-200 dark:text-slate-400 text-slate-600 hover:bg-slate-700 hover:text-white'}`}
                           >
                             {n}
                           </button>
@@ -580,9 +580,9 @@ const ProjectManagement = () => {
                   </div>
                 </div>
 
-                <div className="flex gap-3 pt-6">
-                  <Button type="button" variant="ghost" className="flex-1 text-slate-400 hover:text-white" onClick={() => setShowCreateProject(false)}>Cancel Mission</Button>
-                  <Button type="submit" className="flex-1 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-bold shadow-lg shadow-cyan-500/20">Launch Mission</Button>
+                <div className="flex flex-col sm:flex-row gap-3 pt-6">
+                  <Button type="button" variant="ghost" className="flex-1 text-slate-400 hover:text-white w-full sm:w-auto" onClick={() => setShowCreateProject(false)}>Cancel Mission</Button>
+                  <Button type="submit" className="flex-1 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-bold shadow-lg shadow-cyan-500/20 w-full sm:w-auto">Launch Mission</Button>
                 </div>
               </form>
             </motion.div>

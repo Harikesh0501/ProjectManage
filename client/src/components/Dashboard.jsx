@@ -23,7 +23,7 @@ import API_URL from '../config';
 
 const DashboardHero = ({ user, projectCount }) => {
   return (
-    <div className="relative w-full p-8 rounded-3xl bg-gradient-to-r dark:from-violet-900/20 dark:to-fuchsia-900/20 from-violet-600/10 to-fuchsia-600/10 border dark:border-white/10 border-slate-200 overflow-hidden mb-12 shadow-sm">
+    <div className="relative w-full p-4 md:p-8 rounded-3xl bg-gradient-to-r dark:from-violet-900/20 dark:to-fuchsia-900/20 from-violet-600/10 to-fuchsia-600/10 border dark:border-white/10 border-slate-200 overflow-hidden mb-8 md:mb-12 shadow-sm">
       <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 brightness-100 contrast-150 mix-blend-overlay"></div>
       <div className="absolute -top-24 -right-24 w-64 h-64 bg-purple-500/30 rounded-full blur-[100px]"></div>
       <div className="absolute -bottom-24 -left-24 w-64 h-64 bg-blue-500/30 rounded-full blur-[100px]"></div>
