@@ -181,7 +181,7 @@ const Login = () => {
         initial={{ x: -50, opacity: 0 }}
         animate={{ x: 0, opacity: 1 }}
         transition={{ duration: 0.8, ease: "easeOut" }}
-        className="w-full lg:w-1/2 flex flex-col justify-center items-center p-8 sm:p-12 z-10 perspective-1000"
+        className="w-full lg:w-1/2 flex flex-col justify-center items-center p-4 sm:p-12 z-10 perspective-1000"
       >
         <div className="w-full max-w-md space-y-8" style={{ perspective: 1000 }}>
           {/* Logo / Header */}

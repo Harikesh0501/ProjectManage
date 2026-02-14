@@ -721,7 +721,7 @@ const ProjectDetail = () => {
           )}
         </AnimatePresence>
 
-        <div className="p-8 pb-20">
+        <div className="p-4 md:p-8 pb-20">
           <AnimatePresence mode="wait">
             <motion.div
               key={activeTab}

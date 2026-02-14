@@ -268,7 +268,7 @@ const UserManagement = () => {
       </div>
 
       {/* Stats Summary */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 px-4 md:px-8">
         {[
           { label: 'Total Users', value: users.length, color: 'text-violet-400' },
           { label: 'Students', value: users.filter(u => u.role === 'Student').length, color: 'text-cyan-400' },
@@ -283,7 +283,7 @@ const UserManagement = () => {
       </div>
 
       {/* Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 pb-20">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 px-4 md:px-8 pb-20">
         <AnimatePresence>
           {filteredUsers.map((user, index) => (
             <UserCard
