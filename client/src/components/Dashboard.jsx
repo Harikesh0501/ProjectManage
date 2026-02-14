@@ -319,7 +319,7 @@ const Dashboard = ({ setIsDarkMode, isDarkMode }) => {
       </nav>
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-6 pt-28 pb-12 relative z-10">
+      <main className="max-w-7xl mx-auto px-4 md:px-6 pt-28 pb-12 relative z-10">
 
         <DashboardHero user={user} projectCount={projects.length} />
 

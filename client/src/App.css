@@ -154,7 +154,7 @@ body {
 /* Responsive design */
 @media (max-width: 768px) {
   #root {
-    padding: 1rem;
+    padding: 0;
   }
 
   .card-modern {

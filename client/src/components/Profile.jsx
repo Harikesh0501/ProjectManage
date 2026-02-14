@@ -157,7 +157,7 @@ const Profile = () => {
     <div className="min-h-screen dark:bg-[#030712] bg-slate-50 dark:text-white text-slate-900 font-sans selection:bg-purple-500/30 relative overflow-hidden">
       <div className="dark:block hidden"><FireflyBackground /></div>
 
-      <main className="max-w-6xl mx-auto px-6 py-12 relative z-10">
+      <main className="max-w-6xl mx-auto px-4 md:px-6 py-12 relative z-10">
 
         {/* Navigation Bar */}
         <motion.div

@@ -268,7 +268,7 @@ const AdminDashboard = () => {
                 transition={{ duration: 0.3 }}
               >
                 {activeTab === 'overview' && (
-                  <div className="space-y-6">
+                  <div className="space-y-6 px-4 md:px-8 pt-6">
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                       {[
                         { label: 'Total Users', value: stats.totalUsers || 0, icon: Users, color: 'from-blue-500 to-indigo-600' },

@@ -9,7 +9,7 @@ const Settings = () => {
     const navigate = useNavigate();
 
     return (
-        <div className="min-h-screen bg-[#030712] text-white flex justify-center p-6 relative overflow-hidden">
+        <div className="min-h-screen bg-[#030712] text-white flex justify-center p-4 md:p-6 relative overflow-hidden">
             <FireflyBackground />
 
             <div className="w-full max-w-2xl relative z-10">

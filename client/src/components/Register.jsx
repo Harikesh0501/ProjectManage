@@ -160,7 +160,7 @@ const Register = () => {
         initial={{ x: 50, opacity: 0 }}
         animate={{ x: 0, opacity: 1 }}
         transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
-        className="w-full lg:w-1/2 flex flex-col justify-center items-center p-6 sm:p-12 z-10 overflow-y-auto perspective-1000"
+        className="w-full lg:w-1/2 flex flex-col justify-center items-center p-4 sm:p-12 z-10 overflow-y-auto perspective-1000"
       >
         <div className="w-full max-w-lg space-y-6" style={{ perspective: 1000 }}>
 
