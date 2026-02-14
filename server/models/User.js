@@ -12,6 +12,9 @@ const UserSchema = new mongoose.Schema({
   education: String,
   expertise: [String], // for mentors
   availability: { type: Boolean, default: true }, // for mentors
+  company: String, // for mentors
+  linkedin: String, // for mentors
+  github: String, // for mentors
   photo: String, // path to uploaded photo
 }, { timestamps: true });
 
