@@ -366,12 +366,12 @@ const Profile = () => {
                       {user.role === 'Mentor' && (
                         <>
                           <div className="space-y-2">
-                            <Label className="dark:text-slate-400 text-slate-500 text-xs uppercase tracking-wider">Company / Organization</Label>
+                            <Label className="dark:text-slate-400 text-slate-500 text-xs uppercase tracking-wider">College / Institute</Label>
                             <Input
                               value={profile.company || ''}
                               onChange={(e) => setProfile({ ...profile, company: e.target.value })}
                               disabled={!isEditing}
-                              placeholder="Google, Microsoft, Freelance..."
+                              placeholder="......."
                               className="dark:bg-black/20 bg-slate-50 dark:border-white/10 border-slate-200 dark:text-white text-slate-900 h-12"
                             />
                           </div>
