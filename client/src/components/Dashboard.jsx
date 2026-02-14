@@ -460,7 +460,7 @@ const Dashboard = ({ setIsDarkMode, isDarkMode }) => {
                   <div className="space-y-4 border-t border-white/5 pt-4">
                     <Label className="dark:text-slate-300 text-slate-700">Select Mentor</Label>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                      {mentors.map((mentor) => (
+                      {mentors.filter(m => m.availability).map((mentor) => (
                         <div
                           key={mentor._id}
                           onClick={() => setNewProject({ ...newProject, mentor: mentor.user._id })}
