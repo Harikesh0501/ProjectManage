@@ -363,24 +363,6 @@ const Profile = () => {
                         </>
                       )}
 
-                      {user.role === 'Mentor' && (
-                        <div className="space-y-2">
-                          <Label className="dark:text-slate-400 text-slate-500 text-xs uppercase tracking-wider">Availability</Label>
-                          <Select
-                            value={profile.availability ? 'available' : 'unavailable'}
-                            onValueChange={(value) => setProfile({ ...profile, availability: value === 'available' })}
-                            disabled={!isEditing}
-                          >
-                            <SelectTrigger className="dark:bg-black/20 bg-slate-50 dark:border-white/10 border-slate-200 dark:text-white text-slate-900 h-12">
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent className="dark:bg-slate-900 bg-white dark:border-white/10 border-slate-200 dark:text-white text-slate-900">
-                              <SelectItem value="available">🟢 Available for Guiding</SelectItem>
-                              <SelectItem value="unavailable">🔴 Currently Busy</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div>
-                      )}
                     </div>
 
                     {/* Right Form Column */}
