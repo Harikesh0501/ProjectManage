@@ -116,7 +116,7 @@ const Analytics = () => {
   ];
 
   return (
-    <div className="space-y-8 pb-10">
+    <div className="space-y-8 pb-10 p-4 md:p-8">
       {/* Header */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
