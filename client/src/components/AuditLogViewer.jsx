@@ -42,7 +42,7 @@ const AuditLogViewer = () => {
     };
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-6 p-4 md:p-8">
             <div className="flex justify-between items-center">
                 <h2 className="text-2xl font-bold dark:text-white text-slate-900 flex items-center gap-2">
                     <ShieldAlert className="w-6 h-6 text-red-500" />
@@ -115,7 +115,7 @@ const AuditLogViewer = () => {
                     </table>
                 </div>
             </div>
-        </div>
+        </div >
     );
 };
 

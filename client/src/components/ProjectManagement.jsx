@@ -277,7 +277,7 @@ const ProjectManagement = () => {
   };
 
   return (
-    <div className="w-full space-y-8">
+    <div className="w-full space-y-8 p-4 md:p-8">
       {/* Controls Section - Cockpit Style */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}

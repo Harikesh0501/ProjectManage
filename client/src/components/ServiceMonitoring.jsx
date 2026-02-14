@@ -219,7 +219,7 @@ const ServiceMonitoring = ({ services, toggleService }) => {
     if (!services) return null;
 
     return (
-        <div className="space-y-8 pb-10 relative">
+        <div className="space-y-8 pb-10 relative p-4 md:p-8">
             {/* AI Diagnosis Result Panel */}
             <AnimatePresence>
                 {aiDiagnosis && (

@@ -208,10 +208,10 @@ const UserManagement = () => {
   };
 
   return (
-    <div className="min-h-full space-y-8 animate-in fade-in duration-500">
+    <div className="min-h-full flex flex-col gap-8 animate-in fade-in duration-500">
 
       {/* Header & Controls */}
-      <div className="flex flex-col md:flex-row justify-between items-end gap-6">
+      <div className="flex flex-col md:flex-row justify-between items-end gap-6 px-4 pt-4 md:px-8 md:pt-8">
         <div>
           <h2 className="text-3xl font-bold dark:text-white text-slate-900 tracking-tight flex items-center gap-3">
             <User className="text-cyan-400" /> User Database
@@ -239,7 +239,7 @@ const UserManagement = () => {
       </div>
 
       {/* Cockpit Controls */}
-      <div className="sticky top-0 z-20 dark:bg-[#050B14]/80 bg-slate-50/80 backdrop-blur-xl border-y dark:border-white/5 border-slate-200 py-4 -mx-4 px-4 md:-mx-8 md:px-8 space-y-4">
+      <div className="sticky top-0 z-20 dark:bg-[#050B14]/95 bg-slate-50/95 backdrop-blur-xl border-y dark:border-white/5 border-slate-200 py-4 px-4 md:px-8 space-y-4 shadow-sm">
         <div className="flex flex-col md:flex-row gap-4">
           <div className="relative flex-1 group">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-cyan-400 transition-colors" size={18} />
