@@ -31,7 +31,7 @@ const AdminDashboard = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [activeTab, setActiveTab] = useState(location.state?.tab || 'overview');
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(window.innerWidth >= 768);
   const [stats, setStats] = useState({});
   const [loading, setLoading] = useState(true);
   const [services, setServices] = useState({
@@ -145,22 +145,40 @@ const AdminDashboard = () => {
         <div className="absolute top-[20%] right-[20%] w-[30%] h-[30%] bg-blue-900/10 rounded-full blur-[80px]" />
       </div>
 
+      {/* Mobile Overlay */}
+      {isSidebarOpen && (
+        <div
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 md:hidden"
+          onClick={() => setIsSidebarOpen(false)}
+        />
+      )}
+
       {/* Sidebar */}
       <motion.aside
         initial={{ x: -280 }}
-        animate={{ x: isSidebarOpen ? 0 : -280 }}
-        className={`fixed inset-y-0 left-0 z-50 w-72 dark:bg-[#0A101F]/80 bg-white backdrop-blur-xl border-r dark:border-white/5 border-slate-200 flex flex-col transition-transform duration-300 md:relative md:translate-x-0 shadow-xl md:shadow-none`}
+        animate={{ x: isSidebarOpen ? 0 : -280, transition: { type: 'tween', duration: 0.15 } }}
+        className={`fixed inset-y-0 left-0 z-50 w-72 dark:bg-[#0A101F]/80 bg-white backdrop-blur-xl border-r dark:border-white/5 border-slate-200 flex flex-col md:relative md:translate-x-0 shadow-xl md:shadow-none`}
       >
-        <div className="p-6 flex items-center gap-3 border-b dark:border-white/5 border-slate-100">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center shadow-lg shadow-cyan-500/20">
-            <ShieldAlert className="w-6 h-6 text-white" />
+        <div className="p-6 flex items-center justify-between border-b dark:border-white/5 border-slate-100">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center shadow-lg shadow-cyan-500/20">
+              <ShieldAlert className="w-6 h-6 text-white" />
+            </div>
+            <div>
+              <h1 className="font-bold text-xl tracking-wide bg-gradient-to-r from-slate-900 to-slate-600 dark:from-white dark:to-slate-400 bg-clip-text text-transparent">NEXUS ADMIN</h1>
+              <p className="text-xs text-slate-500 font-mono">v2.0.0 Stable</p>
+            </div>
           </div>
-          <div>
-            <h1 className="font-bold text-xl tracking-wide bg-gradient-to-r from-slate-900 to-slate-600 dark:from-white dark:to-slate-400 bg-clip-text text-transparent">NEXUS ADMIN</h1>
-            <p className="text-xs text-slate-500 font-mono">v2.0.0 Stable</p>
-          </div>
-          <div className="hidden md:block ml-auto">
-            <ModeToggle />
+          <div className="flex items-center gap-2">
+            <div className="hidden md:block">
+              <ModeToggle />
+            </div>
+            <button
+              onClick={() => setIsSidebarOpen(false)}
+              className="md:hidden p-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-white/5 rounded-lg transition-colors"
+            >
+              <X className="w-5 h-5" />
+            </button>
           </div>
         </div>
 
@@ -168,7 +186,10 @@ const AdminDashboard = () => {
           {navItems.map((item) => (
             <button
               key={item.id}
-              onClick={() => setActiveTab(item.id)}
+              onClick={() => {
+                setActiveTab(item.id);
+                if (window.innerWidth < 768) setIsSidebarOpen(false);
+              }}
               className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 group relative overflow-hidden ${activeTab === item.id ? 'text-white shadow-lg shadow-cyan-900/20' : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5'}`}
             >
               {activeTab === item.id && (

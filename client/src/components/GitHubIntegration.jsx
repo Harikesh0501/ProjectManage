@@ -312,7 +312,7 @@ function LinkedRepository({ repoData, projectId, userRole, teamMembers }) {
               className="bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-400 border border-emerald-500/30 backdrop-blur-md transition-all shadow-lg hover:shadow-emerald-500/10"
             >
               <GitPullRequest className="w-4 h-4 mr-2" />
-              Sync Issues to Tasks
+              <span className="hidden md:inline">Sync Issues to Tasks</span>
             </Button>
 
             <Button
@@ -321,7 +321,7 @@ function LinkedRepository({ repoData, projectId, userRole, teamMembers }) {
             >
               <a href={repoData.repoUrl} target="_blank" rel="noopener noreferrer">
                 <ExternalLink className="w-4 h-4 mr-2" />
-                Open in GitHub
+                <span className="hidden md:inline">Open in GitHub</span>
               </a>
             </Button>
           </div>

@@ -30,7 +30,7 @@ import FireflyBackground from './ui/FireflyBackground';
 import ProjectSidebar from './ui/ProjectSidebar';
 import {
   Target, Clock, Users, Rocket, Zap, TrendingUp, Plus, MessageSquare, ChevronDown, CheckCircle, AlertCircle, Calendar,
-  Bell, Search, ChevronRight, Github, ExternalLink, Activity, Bot, X, Sparkles, FileDown, Loader2
+  Bell, Search, ChevronRight, Github, ExternalLink, Activity, Bot, X, Sparkles, FileDown, Loader2, List
 } from 'lucide-react';
 import { generateProjectPDF } from '../lib/pdfGenerator';
 import StatusBadge from './StatusBadge';
@@ -64,6 +64,9 @@ const ProjectDetail = () => {
   const [showAddTeamMember, setShowAddTeamMember] = useState(false);
   const [newTeamMember, setNewTeamMember] = useState({ email: '' });
   const [showNotifications, setShowNotifications] = useState(false);
+
+  // Mobile Sidebar State
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const [loading, setLoading] = useState(true);
 
@@ -523,22 +526,40 @@ const ProjectDetail = () => {
       </AnimatePresence>
 
       {/* Sidebar Navigation */}
-      <ProjectSidebar activeTab={activeTab} setActiveTab={setActiveTab} userRole={user.role} />
+      <ProjectSidebar
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+        userRole={user.role}
+        isOpen={mobileMenuOpen}
+        onClose={() => setMobileMenuOpen(false)}
+      />
 
       {/* Main Content Area */}
       <main className="flex-1 h-screen overflow-y-auto relative z-10 custom-scrollbar">
 
         {/* Persistent Header */}
-        <header className="sticky top-0 z-20 dark:bg-[#030712]/80 bg-white/80 backdrop-blur-xl border-b dark:border-white/5 border-slate-200 px-8 py-5 flex items-center justify-between">
-          <div>
-            <div className="flex items-center gap-3 mb-1">
-              <h1 className="text-2xl font-bold dark:text-white text-slate-900 tracking-tight">{project.title}</h1>
-              <StatusBadge status={project.status} size="sm" />
+        <header className="sticky top-0 z-20 dark:bg-[#030712]/80 bg-white/80 backdrop-blur-xl border-b dark:border-white/5 border-slate-200 px-2 md:px-8 py-3 md:py-5 flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            {/* Mobile Menu Toggle */}
+            <button
+              onClick={() => setMobileMenuOpen(true)}
+              className="p-2 -ml-2 rounded-lg text-slate-400 hover:text-white lg:hidden"
+            >
+              <List className="w-6 h-6" />
+            </button>
+
+            <div>
+              <div className="flex items-center gap-3 mb-1 min-w-0">
+                <h1 className="text-xl md:text-2xl font-bold dark:text-white text-slate-900 tracking-tight truncate max-w-[90px] md:max-w-xs">{project.title}</h1>
+                <div className="hidden md:block">
+                  <StatusBadge status={project.status} size="sm" />
+                </div>
+              </div>
+              <p className="text-slate-400 text-xs md:text-sm max-w-[200px] md:max-w-xl truncate hidden md:block">{project.description}</p>
             </div>
-            <p className="text-slate-400 text-sm max-w-xl truncate">{project.description}</p>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-1 md:gap-3 flex-shrink-0">
             {user?.role === 'Student' && (
               <Button
                 onClick={toggleSOS}
@@ -551,7 +572,7 @@ const ProjectDetail = () => {
               >
                 <div className="relative z-10 flex items-center gap-2">
                   <AlertCircle className="w-4 h-4" />
-                  {isStuck ? "CANCEL SOS" : "STUCK?"}
+                  <span className="hidden md:inline">{isStuck ? "CANCEL SOS" : "STUCK?"}</span>
                 </div>
               </Button>
             )}
@@ -566,12 +587,12 @@ const ProjectDetail = () => {
                 {isGeneratingReport ? (
                   <div className="flex items-center gap-2">
                     <Loader2 className="w-4 h-4 animate-spin" />
-                    Generating...
+                    <span className="hidden md:inline">Generating...</span>
                   </div>
                 ) : (
                   <div className="flex items-center gap-2">
                     <FileDown className="w-4 h-4" />
-                    Download Report
+                    <span className="hidden md:inline">Download Report</span>
                   </div>
                 )}
               </Button>
@@ -583,7 +604,7 @@ const ProjectDetail = () => {
               >
                 <div className="flex items-center gap-2">
                   <FileDown className="w-4 h-4" />
-                  Report (Complete Project First)
+                  <span className="hidden md:inline">Report (Complete Project First)</span>
                 </div>
               </Button>
             )}
@@ -593,7 +614,7 @@ const ProjectDetail = () => {
                 href={project.githubLink}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="p-2.5 rounded-full bg-white/5 hover:bg-white/10 border border-white/5 transition-colors relative flex items-center justify-center group"
+                className="p-1.5 md:p-2.5 rounded-full bg-white/5 hover:bg-white/10 border border-white/5 transition-colors relative flex items-center justify-center group"
                 title="Open GitHub Repo"
               >
                 <Github className="w-5 h-5 text-slate-300 group-hover:text-white" />
@@ -603,7 +624,7 @@ const ProjectDetail = () => {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => setShowNotifications(true)}
-              className="p-2.5 rounded-full bg-white/5 hover:bg-white/10 border border-white/5 transition-colors relative"
+              className="p-1.5 md:p-2.5 rounded-full bg-white/5 hover:bg-white/10 border border-white/5 transition-colors relative"
             >
               <Bell className="w-5 h-5 text-slate-300" />
               <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full"></span>
@@ -612,7 +633,7 @@ const ProjectDetail = () => {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => setShowJarvis(!showJarvis)}
-              className={`p-2.5 rounded-full transition-all border ${showJarvis ? 'bg-cyan-500 text-white shadow-[0_0_15px_rgba(6,182,212,0.5)] border-cyan-400' : 'bg-white/5 hover:bg-white/10 text-slate-300 border-white/5'}`}
+              className={`p-1.5 md:p-2.5 rounded-full transition-all border ${showJarvis ? 'bg-cyan-500 text-white shadow-[0_0_15px_rgba(6,182,212,0.5)] border-cyan-400' : 'bg-white/5 hover:bg-white/10 text-slate-300 border-white/5'}`}
             >
               <Bot className="w-5 h-5" />
             </motion.button>
