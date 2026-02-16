@@ -58,13 +58,17 @@ const upload = multer({
 router.post('/register', async (req, res) => {
   const { name, email, password, role, collegeId } = req.body;
   try {
-    let user = await User.findOne({ email });
-    if (user) return res.status(400).json({ msg: 'User already exists' });
+    const normalizedEmail = email.trim().toLowerCase();
+    // Check for existing user (case-insensitive) to catch legacy mixed-case emails
+    let user = await User.findOne({ email: { $regex: new RegExp(`^${normalizedEmail}$`, 'i') } });
+    if (user) {
+      return res.status(400).json({ msg: 'User already exists' });
+    }
 
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    user = new User({ name, email, password: hashedPassword, role, collegeId });
+    user = new User({ name, email: normalizedEmail, password: hashedPassword, role, collegeId });
     await user.save();
 
     if (user.role === 'Mentor') {
@@ -93,12 +97,17 @@ router.get('/me', auth, async (req, res) => {
 });
 router.post('/login', async (req, res) => {
   const { email, password } = req.body;
+
+  // Normalize email input
+  const normalizedEmail = email.trim();
+
   try {
     const settings = await Settings.findOne();
     const maintenanceMode = settings ? settings.maintenanceMode : false;
     const apiServerEnabled = settings && settings.services ? settings.services.apiServer : true;
 
-    const user = await User.findOne({ email });
+    // Find user case-insensitively
+    const user = await User.findOne({ email: { $regex: new RegExp(`^${normalizedEmail}$`, 'i') } });
     if (!user) return res.status(400).json({ msg: 'Invalid credentials' });
 
     if (maintenanceMode && user.role.toLowerCase() !== 'admin') {
