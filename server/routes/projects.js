@@ -84,7 +84,7 @@ router.get('/:id', auth, async (req, res) => {
 
     // Check if user has access to this project
     const isAdmin = req.user.role === 'Admin';
-    const isCreator = project.creator._id.toString() === req.user.id;
+    const isCreator = project.creator?._id.toString() === req.user.id;
     const isStudent = project.students.some(s => s.toString() === req.user.id);
     const isTeamMember = project.teamMembers.some(tm => tm._id.toString() === req.user.id);
     const isMentor = project.mentor?._id?.toString() === req.user.id;
