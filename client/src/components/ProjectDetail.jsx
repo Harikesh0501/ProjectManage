@@ -831,7 +831,7 @@ const ProjectDetail = () => {
                       </div>
                       <h3 className="text-slate-500 text-xs font-bold uppercase tracking-widest mb-1">Squadron</h3>
                       <div className="flex items-center gap-3 mb-4">
-                        <span className="text-3xl font-bold dark:text-white text-slate-900 tracking-tight">{project.teamMembers.length + (project.creator ? 1 : 0) + (project.mentor ? 1 : 0)}</span>
+                        <span className="text-3xl font-bold dark:text-white text-slate-900 tracking-tight">{(project.teamMembers?.length || 0) + (project.students?.length || 0) + (project.creator ? 1 : 0) + (project.mentor ? 1 : 0)}</span>
                         <span className="text-xs font-medium text-blue-400 bg-blue-500/10 px-2 py-0.5 rounded border border-blue-500/10">ACTIVE</span>
                       </div>
                       <div className="flex -space-x-3 pl-1">
@@ -851,9 +851,14 @@ const ProjectDetail = () => {
                             </div>
                           </div>
                         )}
-                        {project.teamMembers.slice(0, 4).map((member, i) => (
-                          <div key={i} className="w-9 h-9 rounded-full dark:bg-[#0A101F] bg-white border-2 dark:border-[#1e293b] border-slate-200 flex items-center justify-center text-xs dark:text-white text-slate-700 overflow-hidden hover:scale-110 transition-transform z-10 hover:z-20 cursor-pointer relative" title={member.name}>
+                        {project.teamMembers?.slice(0, 4).map((member, i) => (
+                          <div key={`tm-${i}`} className="w-9 h-9 rounded-full dark:bg-[#0A101F] bg-white border-2 dark:border-[#1e293b] border-slate-200 flex items-center justify-center text-xs dark:text-white text-slate-700 overflow-hidden hover:scale-110 transition-transform z-10 hover:z-20 cursor-pointer relative" title={member.name}>
                             {member.name?.charAt(0)}
+                          </div>
+                        ))}
+                        {project.students?.slice(0, 4).map((student, i) => (
+                          <div key={`st-${i}`} className="w-9 h-9 rounded-full dark:bg-[#0A101F] bg-white border-2 dark:border-[#1e293b] border-slate-200 flex items-center justify-center text-xs dark:text-white text-slate-700 overflow-hidden hover:scale-110 transition-transform z-10 hover:z-20 cursor-pointer relative" title={student.name || student.email}>
+                            {student.name?.charAt(0) || 'S'}
                           </div>
                         ))}
                       </div>
@@ -1360,7 +1365,7 @@ const ProjectDetail = () => {
                                       onChange={(e) => setNewFeedback({ ...newFeedback, to: e.target.value })}
                                     >
                                       <option value="">Select Operative...</option>
-                                      {project.teamMembers.map(m => <option key={m.email} value={m.email}>{m.name || m.email}</option>)}
+                                      {project.teamMembers?.map(m => <option key={m.email} value={m.email}>{m.name || m.email}</option>)}
                                     </select>
                                     <div className="absolute right-3 top-3.5 pointer-events-none text-slate-500">
                                       <ChevronDown size={14} />
@@ -1524,7 +1529,7 @@ const ProjectDetail = () => {
                         </div>
                       </motion.div>
                     )}
-                    {project.teamMembers.map((member) => (
+                    {project.teamMembers?.map((member) => (
                       <motion.div
                         key={member.email}
                         initial={{ opacity: 0, scale: 0.9 }}
@@ -1548,6 +1553,38 @@ const ProjectDetail = () => {
                           <div className="flex flex-wrap gap-2 justify-center">
                             {member.skills?.map((skill, i) => (
                               <Badge key={i} variant="outline" className="bg-cyan-500/10 border-cyan-500/20 text-cyan-300 text-[10px] uppercase tracking-wider">{skill}</Badge>
+                            ))}
+                          </div>
+                        </div>
+                      </motion.div>
+                    ))}
+
+                    {/* Student Cards */}
+                    {project.students?.map((student) => (
+                      <motion.div
+                        key={student.email || student._id}
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        className="relative dark:bg-[#0A101F]/60 bg-white border dark:border-emerald-500/20 border-emerald-100 p-6 rounded-3xl overflow-hidden group hover:border-emerald-500/40 transition-all hover:shadow-lg hover:shadow-emerald-500/10 shadow-sm"
+                      >
+                        <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-30 transition-opacity">
+                          <Users className="w-24 h-24 text-emerald-500" />
+                        </div>
+                        <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+
+                        <div className="relative z-10 flex flex-col items-center text-center">
+                          <div className="w-20 h-20 rounded-2xl bg-gradient-to-tr from-emerald-500 to-green-500 p-0.5 mb-4 shadow-lg shadow-emerald-500/20 group-hover:scale-105 transition-transform">
+                            <div className="w-full h-full rounded-2xl dark:bg-[#0A101F] bg-white flex items-center justify-center text-2xl font-bold dark:text-white text-slate-800 overflow-hidden relative">
+                              <div className="absolute inset-0 bg-emerald-500/10 mix-blend-overlay"></div>
+                              {student.name?.charAt(0) || 'S'}
+                            </div>
+                          </div>
+                          <h4 className="text-lg font-bold dark:text-white text-slate-900 mb-1 tracking-wide">{student.name || 'Student'}</h4>
+                          <p className="text-sm text-emerald-400 font-mono mb-2 text-xs">{student.email}</p>
+                          <Badge variant="outline" className="bg-emerald-500/10 border-emerald-500/20 text-emerald-300 text-[10px] uppercase tracking-wider mb-2">Squad Member</Badge>
+                          <div className="flex flex-wrap gap-2 justify-center mt-2">
+                            {student.skills?.map((skill, i) => (
+                              <Badge key={i} variant="outline" className="bg-emerald-500/10 border-emerald-500/20 text-emerald-300 text-[10px] uppercase tracking-wider">{skill}</Badge>
                             ))}
                           </div>
                         </div>
