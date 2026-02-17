@@ -831,7 +831,7 @@ const ProjectDetail = () => {
                       </div>
                       <h3 className="text-slate-500 text-xs font-bold uppercase tracking-widest mb-1">Squadron</h3>
                       <div className="flex items-center gap-3 mb-4">
-                        <span className="text-3xl font-bold dark:text-white text-slate-900 tracking-tight">{project.teamMembers.length + (project.creator ? 1 : 0) + (project.mentor ? 1 : 0)}</span>
+                        <span className="text-3xl font-bold dark:text-white text-slate-900 tracking-tight">{(project.teamMembers?.length || 0) + (project.creator ? 1 : 0) + (project.mentor ? 1 : 0)}</span>
                         <span className="text-xs font-medium text-blue-400 bg-blue-500/10 px-2 py-0.5 rounded border border-blue-500/10">ACTIVE</span>
                       </div>
                       <div className="flex -space-x-3 pl-1">
@@ -851,7 +851,7 @@ const ProjectDetail = () => {
                             </div>
                           </div>
                         )}
-                        {project.teamMembers.slice(0, 4).map((member, i) => (
+                        {project.teamMembers?.slice(0, 4).map((member, i) => (
                           <div key={i} className="w-9 h-9 rounded-full dark:bg-[#0A101F] bg-white border-2 dark:border-[#1e293b] border-slate-200 flex items-center justify-center text-xs dark:text-white text-slate-700 overflow-hidden hover:scale-110 transition-transform z-10 hover:z-20 cursor-pointer relative" title={member.name}>
                             {member.name?.charAt(0)}
                           </div>
@@ -1360,7 +1360,7 @@ const ProjectDetail = () => {
                                       onChange={(e) => setNewFeedback({ ...newFeedback, to: e.target.value })}
                                     >
                                       <option value="">Select Operative...</option>
-                                      {project.teamMembers.map(m => <option key={m.email} value={m.email}>{m.name || m.email}</option>)}
+                                      {project.teamMembers?.map(m => <option key={m.email} value={m.email}>{m.name || m.email}</option>)}
                                     </select>
                                     <div className="absolute right-3 top-3.5 pointer-events-none text-slate-500">
                                       <ChevronDown size={14} />
@@ -1524,7 +1524,7 @@ const ProjectDetail = () => {
                         </div>
                       </motion.div>
                     )}
-                    {project.teamMembers.map((member) => (
+                    {project.teamMembers?.map((member) => (
                       <motion.div
                         key={member.email}
                         initial={{ opacity: 0, scale: 0.9 }}
