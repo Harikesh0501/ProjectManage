@@ -220,7 +220,7 @@ const SprintBoard = ({ projectId, userRole, onUpdate }) => {
                             className="xl:col-span-2 dark:bg-[#0A101F]/80 bg-white p-6 rounded-3xl border dark:border-white/5 border-slate-200 backdrop-blur-md relative overflow-hidden flex flex-col justify-between shadow-sm"
                         >
                             <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/5 via-transparent to-purple-500/5 opacity-50"></div>
-                            <div className="relative z-10 flex justify-between items-start">
+                            <div className="relative z-10 flex flex-col md:flex-row md:justify-between md:items-start gap-4">
                                 <div>
                                     <div className="flex items-center gap-3 mb-2">
                                         <h3 className="text-2xl font-bold dark:text-white text-slate-900 tracking-tight">{activeSprint.name}</h3>
@@ -234,7 +234,7 @@ const SprintBoard = ({ projectId, userRole, onUpdate }) => {
                                         <span className="flex items-center gap-1.5"><Flag size={14} /> {new Date(activeSprint.endDate).toLocaleDateString()}</span>
                                     </div>
                                 </div>
-                                <div className="text-right max-w-xs">
+                                <div className="text-left md:text-right md:max-w-xs w-full md:w-auto">
                                     <span className="text-[10px] text-slate-500 uppercase tracking-widest font-bold block mb-1">Mission Objective</span>
                                     <p className="dark:text-slate-300 text-slate-600 text-sm font-medium leading-relaxed">"{activeSprint.goal}"</p>
                                 </div>
