@@ -454,11 +454,11 @@ const ProjectDetail = () => {
 
   const handleAddFeedback = async (e) => {
     e.preventDefault();
-    // For mentors, 'to' is optional (defaults to 'all'). For others it is required.
-    const recipient = user.role === 'Mentor' ? 'all' : newFeedback.to;
+    // For mentors and admins, 'to' is optional (defaults to 'all'). For others it is required.
+    const recipient = (user.role === 'Mentor' || user.role === 'Admin') ? 'all' : newFeedback.to;
 
-    if (!newFeedback.message.trim() || (user.role !== 'Mentor' && !recipient)) {
-      return alert('Please enter a message' + (user.role !== 'Mentor' ? ' and select a recipient' : ''));
+    if (!newFeedback.message.trim() || ((user.role !== 'Mentor' && user.role !== 'Admin') && !recipient)) {
+      return alert('Please enter a message' + ((user.role !== 'Mentor' && user.role !== 'Admin') ? ' and select a recipient' : ''));
     }
 
     try {
@@ -1342,7 +1342,7 @@ const ProjectDetail = () => {
                               {/* Recipient Selection */}
                               <div className="mb-4">
                                 <label className="text-[10px] uppercase font-bold text-slate-500 mb-1.5 block tracking-wider">Target Recipient</label>
-                                {user.role === 'Mentor' ? (
+                                {(user.role === 'Mentor' || user.role === 'Admin') ? (
                                   <div className="flex items-center gap-3 bg-violet-500/10 p-3 rounded-xl border border-violet-500/20">
                                     <div className="w-8 h-8 rounded-full bg-violet-500/20 flex items-center justify-center text-violet-400">
                                       <Users size={16} />
