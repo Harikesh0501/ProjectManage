@@ -181,7 +181,7 @@ router.post('/', auth, async (req, res) => {
     if (req.user.role === 'Student') {
       projectData.students = [req.user.id];
     }
-    if (mentorId) projectData.mentor = mentorId;
+    if (mentorId && req.user.role !== 'Admin') projectData.mentor = mentorId;
     if (startDate && !isNaN(new Date(startDate).getTime())) projectData.startDate = new Date(startDate);
     if (endDate && !isNaN(new Date(endDate).getTime())) projectData.endDate = new Date(endDate);
     if (githubRepo) projectData.githubRepo = githubRepo;
