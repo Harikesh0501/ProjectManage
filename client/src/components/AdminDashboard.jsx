@@ -170,9 +170,7 @@ const AdminDashboard = () => {
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <div className="hidden md:block">
-              <ModeToggle />
-            </div>
+
             <button
               onClick={() => setIsSidebarOpen(false)}
               className="md:hidden p-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-white/5 rounded-lg transition-colors"
@@ -212,10 +210,15 @@ const AdminDashboard = () => {
           ))}
         </nav>
 
-        <div className="p-4 border-t border-white/5">
+        <div className="p-4 border-t border-white/5 space-y-2">
+          <div className="flex items-center justify-between px-4 py-2 bg-slate-50 dark:bg-white/5 rounded-xl border border-slate-100 dark:border-white/5">
+            <span className="text-xs font-medium text-slate-500 dark:text-slate-400">Theme</span>
+            <ModeToggle />
+          </div>
+
           <button
             onClick={() => navigate('/profile')}
-            className="w-full flex items-center gap-3 px-4 py-3 rounded-xl dark:bg-white/5 bg-slate-100 border dark:border-white/5 border-slate-200 mb-3 hover:bg-slate-200 dark:hover:bg-white/10 hover:border-slate-300 dark:hover:border-white/10 hover:scale-[1.02] transition-all group text-left"
+            className="w-full flex items-center gap-3 px-4 py-3 rounded-xl dark:bg-white/5 bg-slate-100 border dark:border-white/5 border-slate-200 hover:bg-slate-200 dark:hover:bg-white/10 hover:border-slate-300 dark:hover:border-white/10 hover:scale-[1.02] transition-all group text-left"
           >
             <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-purple-500 to-pink-500 flex items-center justify-center text-xs font-bold overflow-hidden border border-white/10">
               {user?.photo ? (
