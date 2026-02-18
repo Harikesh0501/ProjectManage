@@ -1360,7 +1360,7 @@ const ProjectDetail = () => {
                                       onChange={(e) => setNewFeedback({ ...newFeedback, to: e.target.value })}
                                     >
                                       <option value="">Select Operative...</option>
-                                      {project.teamMembers?.map(m => <option key={m.email} value={m.email}>{m.name || m.email}</option>)}
+                                      {project.teamMembers?.filter(m => m).map(m => <option key={m.email} value={m.email}>{m.name || m.email}</option>)}
                                     </select>
                                     <div className="absolute right-3 top-3.5 pointer-events-none text-slate-500">
                                       <ChevronDown size={14} />
