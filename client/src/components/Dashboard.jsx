@@ -138,6 +138,7 @@ const Dashboard = ({ setIsDarkMode, isDarkMode }) => {
 
       setLoading(true);
       setError(null);
+      setProjects([]); // Clear previous projects to prevent flash
 
       try {
         const projectsData = await fetchProjects();
