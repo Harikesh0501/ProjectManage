@@ -161,6 +161,41 @@ const Dashboard = ({ setIsDarkMode, isDarkMode }) => {
     loadData();
   }, [user, navigate, fetchProjects, fetchMentors]);
 
+  // Background polling every 30s (silent refresh, no loading state)
+  useEffect(() => {
+    if (!user || user.role === 'Admin') return;
+
+    const pollInterval = setInterval(async () => {
+      try {
+        const projectsData = await fetchProjects();
+        setProjects(Array.isArray(projectsData) ? projectsData : []);
+      } catch (err) {
+        // Silent fail for background polling
+      }
+    }, 30000);
+
+    return () => clearInterval(pollInterval);
+  }, [user, fetchProjects]);
+
+  // Refresh on tab visibility change
+  useEffect(() => {
+    if (!user || user.role === 'Admin') return;
+
+    const handleVisibilityChange = async () => {
+      if (document.visibilityState === 'visible') {
+        try {
+          const projectsData = await fetchProjects();
+          setProjects(Array.isArray(projectsData) ? projectsData : []);
+        } catch (err) {
+          // Silent fail
+        }
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+  }, [user, fetchProjects]);
+
 
   const filteredProjects = Array.isArray(projects) ? ((selectedMentor && selectedMentor !== 'all') ? projects.filter(p => p.mentor && p.mentor._id === selectedMentor) : projects) : [];
 

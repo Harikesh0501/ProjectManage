@@ -322,12 +322,27 @@ router.post('/', auth, async (req, res) => {
 router.get('/available', auth, async (req, res) => {
   try {
     if (req.user.role !== 'Student') return res.status(403).json({ msg: 'Only students can view available projects' });
-    const allProjects = await Project.find({});
-    const projects = allProjects.filter(p => !p.student);
-    console.log('Available projects:', projects.length);
+    const allProjects = await Project.find({}).populate('creator', 'role');
+    const projects = allProjects.filter(p => p.creator && p.creator.role === 'Admin' && (!p.students || p.students.length === 0));
     res.json(projects);
   } catch (err) {
     res.status(500).json({ msg: 'Server error', error: err.message });
+  }
+});
+
+// Check if email is registered in the system
+router.post('/check-email', auth, async (req, res) => {
+  try {
+    const { email } = req.body;
+    if (!email) return res.status(400).json({ registered: false, msg: 'Email is required' });
+    const user = await User.findOne({ email: email.trim().toLowerCase() });
+    if (user) {
+      res.json({ registered: true, name: user.name });
+    } else {
+      res.json({ registered: false });
+    }
+  } catch (err) {
+    res.status(500).json({ registered: false, msg: 'Server error' });
   }
 });
 
@@ -350,18 +365,31 @@ router.put('/:id/join', auth, async (req, res) => {
       }
 
       const processedMemberIds = [];
+      const notFoundEmails = [];
 
       for (const member of teamMembers) {
-        let user;
+        let email;
         if (typeof member === 'string') {
-          user = await User.findOne({ email: member });
+          email = member;
         } else if (typeof member === 'object' && member.email) {
-          user = await User.findOne({ email: member.email });
+          email = member.email;
         }
 
+        if (!email || !email.trim()) continue;
+
+        const user = await User.findOne({ email: email.trim().toLowerCase() });
         if (user) {
           processedMemberIds.push(user._id);
+        } else {
+          notFoundEmails.push(email);
         }
+      }
+
+      if (notFoundEmails.length > 0) {
+        return res.status(400).json({
+          error: `The following email(s) are not registered in the system: ${notFoundEmails.join(', ')}. Please ask them to register first.`,
+          unregisteredEmails: notFoundEmails
+        });
       }
       project.teamMembers = processedMemberIds;
     }

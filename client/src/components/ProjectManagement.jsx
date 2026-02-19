@@ -98,6 +98,17 @@ const ProjectManagement = () => {
     fetchMentors();
   }, [user, navigate]);
 
+  // Refresh project list on tab visibility change
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        fetchProjects();
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+  }, []);
+
   useEffect(() => {
     filterProjects();
   }, [projects, searchTerm, statusFilter, filterProjects]);

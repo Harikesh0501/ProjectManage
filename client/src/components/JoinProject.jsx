@@ -1,4 +1,4 @@
-﻿import { useContext, useEffect, useState } from 'react';
+﻿import { useContext, useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import axios from 'axios';
@@ -11,7 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { Badge } from './ui/badge';
 import FireflyBackground from './ui/FireflyBackground';
 import {
-  Rocket, Calendar, Users, Briefcase, FileText, CheckCircle,
+  Rocket, Calendar, Users, Briefcase, FileText, CheckCircle, XCircle,
   ChevronLeft, Loader2, Search, ArrowRight, Zap, Target
 } from 'lucide-react';
 import API_URL from '../config';
@@ -26,6 +26,7 @@ const JoinProject = () => {
   const [formData, setFormData] = useState({ mentor: '', teamMembers: [] });
   const [isLoading, setIsLoading] = useState(true);
   const [isJoining, setIsJoining] = useState(false);
+  const [emailStatus, setEmailStatus] = useState({}); // { index: { checking, registered, name } }
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -33,6 +34,17 @@ const JoinProject = () => {
     fetchAvailableProjects();
     fetchMentors();
   }, [user, navigate]);
+
+  // Refresh available projects on tab visibility change
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        fetchAvailableProjects();
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+  }, []);
 
   const fetchAvailableProjects = async () => {
     try {
@@ -69,11 +81,55 @@ const JoinProject = () => {
     const updatedDetails = [...teamMemberDetails];
     updatedDetails[index] = { ...updatedDetails[index], [field]: value };
     setTeamMemberDetails(updatedDetails);
+
+    // Real-time email check with debounce
+    if (field === 'email' && value.trim() && value.includes('@')) {
+      if (debounceTimers.current[index]) clearTimeout(debounceTimers.current[index]);
+      debounceTimers.current[index] = setTimeout(() => checkEmail(index, value.trim()), 500);
+    } else if (field === 'email') {
+      if (debounceTimers.current[index]) clearTimeout(debounceTimers.current[index]);
+      setEmailStatus(prev => {
+        const updated = { ...prev };
+        delete updated[index];
+        return updated;
+      });
+    }
+  };
+
+  const debounceTimers = useRef({});
+
+  const checkEmail = async (index, email) => {
+    setEmailStatus(prev => ({ ...prev, [index]: { checking: true } }));
+    try {
+      const res = await axios.post(`${API_URL}/api/projects/check-email`, { email });
+      setEmailStatus(prev => ({ ...prev, [index]: { checking: false, registered: res.data.registered, name: res.data.name || null } }));
+    } catch {
+      setEmailStatus(prev => ({ ...prev, [index]: { checking: false, registered: false } }));
+    }
   };
 
   const handleJoin = async (e) => {
     e.preventDefault();
     if (!selectedProject) return;
+
+    // Check if any email is unregistered
+    const hasUnregistered = teamMemberDetails.some((member, index) =>
+      member.email.trim() && emailStatus[index]?.registered === false
+    );
+    if (hasUnregistered) {
+      alert('Some team members have unregistered emails. Please fix them before submitting.');
+      return;
+    }
+
+    // Check if any email is still being verified
+    const stillChecking = teamMemberDetails.some((member, index) =>
+      member.email.trim() && emailStatus[index]?.checking
+    );
+    if (stillChecking) {
+      alert('Some emails are still being verified. Please wait.');
+      return;
+    }
+
     setIsJoining(true);
 
     // Create full team member objects with status and other details
@@ -348,14 +404,30 @@ const JoinProject = () => {
                               </div>
                               <div className="space-y-2">
                                 <Label className="text-xs text-slate-500 dark:text-slate-400 ml-1">Email Address</Label>
-                                <Input
-                                  type="email"
-                                  placeholder="john@example.com"
-                                  value={member.email}
-                                  onChange={(e) => handleTeamMemberDetailChange(index, 'email', e.target.value)}
-                                  className="bg-white dark:bg-black/20 border-slate-200 dark:border-white/10 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-600 rounded-xl focus:border-cyan-500/50 focus:ring-cyan-500/20"
-                                  required
-                                />
+                                <div className="relative">
+                                  <Input
+                                    type="email"
+                                    placeholder="john@example.com"
+                                    value={member.email}
+                                    onChange={(e) => handleTeamMemberDetailChange(index, 'email', e.target.value)}
+                                    className={`bg-white dark:bg-black/20 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-600 rounded-xl focus:ring-cyan-500/20 pr-10 ${emailStatus[index]?.registered === true ? 'border-emerald-500 focus:border-emerald-500' :
+                                      emailStatus[index]?.registered === false ? 'border-red-500 focus:border-red-500' :
+                                        'border-slate-200 dark:border-white/10 focus:border-cyan-500/50'
+                                      }`}
+                                    required
+                                  />
+                                  <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                                    {emailStatus[index]?.checking && <Loader2 className="w-4 h-4 text-cyan-400 animate-spin" />}
+                                    {emailStatus[index]?.registered === true && <CheckCircle className="w-4 h-4 text-emerald-500" />}
+                                    {emailStatus[index]?.registered === false && !emailStatus[index]?.checking && member.email.includes('@') && <XCircle className="w-4 h-4 text-red-500" />}
+                                  </div>
+                                </div>
+                                {emailStatus[index]?.registered === true && (
+                                  <p className="text-[11px] text-emerald-500 ml-1">✓ Registered as: {emailStatus[index].name}</p>
+                                )}
+                                {emailStatus[index]?.registered === false && !emailStatus[index]?.checking && member.email.includes('@') && (
+                                  <p className="text-[11px] text-red-400 ml-1">✗ This email is not registered in the system</p>
+                                )}
                               </div>
                               <div className="space-y-2">
                                 <Label className="text-xs text-slate-500 dark:text-slate-400 ml-1">GitHub Username</Label>

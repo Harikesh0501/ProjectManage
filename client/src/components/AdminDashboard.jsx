@@ -95,6 +95,73 @@ const AdminDashboard = () => {
     loadData();
   }, [user]);
 
+  // Background polling every 30s for admin stats
+  useEffect(() => {
+    if (!user || user.role !== 'Admin') return;
+
+    const pollInterval = setInterval(async () => {
+      try {
+        const headers = { 'Authorization': localStorage.getItem('token') };
+        const [usersRes, projectsRes] = await Promise.all([
+          axios.get(`${API_URL}/api/admin/users`, { headers }),
+          axios.get(`${API_URL}/api/admin/projects`, { headers })
+        ]);
+        const users = usersRes.data;
+        const projects = projectsRes.data;
+        setStats(prev => ({
+          ...prev,
+          totalUsers: users.length,
+          students: users.filter(u => u.role === 'Student').length,
+          mentors: users.filter(u => u.role === 'Mentor').length,
+          admins: users.filter(u => u.role === 'Admin').length,
+          totalProjects: projects.length,
+          activeProjects: projects.filter(p => p.status === 'Active').length,
+          completedProjects: projects.filter(p => p.status === 'Completed').length,
+          onHoldProjects: projects.filter(p => p.status === 'On Hold').length,
+        }));
+      } catch (err) {
+        // Silent fail
+      }
+    }, 30000);
+
+    return () => clearInterval(pollInterval);
+  }, [user]);
+
+  // Refresh on tab visibility change
+  useEffect(() => {
+    if (!user || user.role !== 'Admin') return;
+
+    const handleVisibilityChange = async () => {
+      if (document.visibilityState === 'visible') {
+        try {
+          const headers = { 'Authorization': localStorage.getItem('token') };
+          const [usersRes, projectsRes] = await Promise.all([
+            axios.get(`${API_URL}/api/admin/users`, { headers }),
+            axios.get(`${API_URL}/api/admin/projects`, { headers })
+          ]);
+          const users = usersRes.data;
+          const projects = projectsRes.data;
+          setStats(prev => ({
+            ...prev,
+            totalUsers: users.length,
+            students: users.filter(u => u.role === 'Student').length,
+            mentors: users.filter(u => u.role === 'Mentor').length,
+            admins: users.filter(u => u.role === 'Admin').length,
+            totalProjects: projects.length,
+            activeProjects: projects.filter(p => p.status === 'Active').length,
+            completedProjects: projects.filter(p => p.status === 'Completed').length,
+            onHoldProjects: projects.filter(p => p.status === 'On Hold').length,
+          }));
+        } catch (err) {
+          // Silent fail
+        }
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+  }, [user]);
+
   const toggleService = async (service) => {
     // Optimistic update
     const oldServices = services;

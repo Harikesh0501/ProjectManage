@@ -216,6 +216,27 @@ const ProjectDetail = () => {
     else fetchProject();
   }, [user, id, navigate, fetchProject]);
 
+  // Refresh project data on tab visibility change
+  useEffect(() => {
+    if (!user || !id) return;
+
+    const handleVisibilityChange = async () => {
+      if (document.visibilityState === 'visible') {
+        try {
+          const res = await axios.get(`${API_URL}/api/projects/${id}`);
+          if (res.data) {
+            setProject(res.data);
+          }
+        } catch (err) {
+          // Silent fail
+        }
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+  }, [user, id]);
+
   // SOS Logic
   const [isStuck, setIsStuck] = useState(false);
 
@@ -831,7 +852,14 @@ const ProjectDetail = () => {
                       </div>
                       <h3 className="text-slate-500 text-xs font-bold uppercase tracking-widest mb-1">Squadron</h3>
                       <div className="flex items-center gap-3 mb-4">
-                        <span className="text-3xl font-bold dark:text-white text-slate-900 tracking-tight">{(project.teamMembers?.length || 0) + (project.students?.length || 0) + (project.creator ? 1 : 0) + (project.mentor ? 1 : 0)}</span>
+                        <span className="text-3xl font-bold dark:text-white text-slate-900 tracking-tight">{(() => {
+                          const ids = new Set();
+                          if (project.mentor?._id) ids.add(project.mentor._id);
+                          if (project.creator?._id) ids.add(project.creator._id);
+                          project.students?.forEach(s => { if (s._id) ids.add(s._id); });
+                          project.teamMembers?.forEach(m => { if (m._id) ids.add(m._id); });
+                          return ids.size;
+                        })()}</span>
                         <span className="text-xs font-medium text-blue-400 bg-blue-500/10 px-2 py-0.5 rounded border border-blue-500/10">ACTIVE</span>
                       </div>
                       <div className="flex -space-x-3 pl-1">
@@ -852,12 +880,19 @@ const ProjectDetail = () => {
                           </div>
                         )}
                         {/* Students Avatar */}
-                        {project.students?.map((student, i) => (
+                        {project.students?.filter(s => {
+                          const sid = s._id || s.email;
+                          return sid !== (project.creator?._id || project.creator?.email) && sid !== (project.mentor?._id || project.mentor?.email);
+                        }).map((student, i) => (
                           <div key={`s-${i}`} className="w-9 h-9 rounded-full dark:bg-[#0A101F] bg-white border-2 dark:border-[#1e293b] border-slate-200 flex items-center justify-center text-xs dark:text-white text-slate-700 overflow-hidden hover:scale-110 transition-transform z-10 hover:z-20 cursor-pointer relative" title={`Student: ${student.name}`}>
                             {student.name?.charAt(0)}
                           </div>
                         ))}
-                        {project.teamMembers?.slice(0, 4).map((member, i) => (
+                        {project.teamMembers?.filter(m => {
+                          const mid = m._id || m.email;
+                          const studentIds = project.students?.map(s => s._id || s.email) || [];
+                          return mid !== (project.creator?._id || project.creator?.email) && mid !== (project.mentor?._id || project.mentor?.email) && !studentIds.includes(mid);
+                        }).slice(0, 4).map((member, i) => (
                           <div key={i} className="w-9 h-9 rounded-full dark:bg-[#0A101F] bg-white border-2 dark:border-[#1e293b] border-slate-200 flex items-center justify-center text-xs dark:text-white text-slate-700 overflow-hidden hover:scale-110 transition-transform z-10 hover:z-20 cursor-pointer relative" title={member.name}>
                             {member.name?.charAt(0)}
                           </div>
@@ -1528,7 +1563,12 @@ const ProjectDetail = () => {
                         </div>
                       </motion.div>
                     )}
-                    {project.students?.map((student) => (
+                    {project.students?.filter(student => {
+                      const studentId = student._id || student.email;
+                      const creatorId = project.creator?._id || project.creator?.email;
+                      const mentorId = project.mentor?._id || project.mentor?.email;
+                      return studentId !== creatorId && studentId !== mentorId;
+                    }).map((student) => (
                       <motion.div
                         key={student._id || student.email}
                         initial={{ opacity: 0, scale: 0.9 }}
@@ -1553,7 +1593,13 @@ const ProjectDetail = () => {
                         </div>
                       </motion.div>
                     ))}
-                    {project.teamMembers?.map((member) => (
+                    {project.teamMembers?.filter(member => {
+                      const memberId = member._id || member.email;
+                      const creatorId = project.creator?._id || project.creator?.email;
+                      const mentorId = project.mentor?._id || project.mentor?.email;
+                      const studentIds = project.students?.map(s => s._id || s.email) || [];
+                      return memberId !== creatorId && memberId !== mentorId && !studentIds.includes(memberId);
+                    }).map((member) => (
                       <motion.div
                         key={member.email}
                         initial={{ opacity: 0, scale: 0.9 }}
