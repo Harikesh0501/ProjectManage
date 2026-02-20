@@ -85,17 +85,16 @@ router.get('/:id', auth, async (req, res) => {
     // Check if user has access to this project
     const isAdmin = req.user.role === 'Admin';
     const isCreator = project.creator?._id.toString() === req.user.id;
-    const isStudent = project.students.some(s => s.toString() === req.user.id);
+    const isStudent = project.students.some(s => s._id.toString() === req.user.id);
     const isTeamMember = project.teamMembers.some(tm => tm._id.toString() === req.user.id);
     const isMentor = project.mentor?._id?.toString() === req.user.id;
 
     console.log('Access check:', { isAdmin, isCreator, isStudent, isTeamMember, isMentor });
 
-    // For testing, allow access
-    // if (!isAdmin && !isCreator && !isTeamMember && !isMentor) {
-    //   console.log('Access denied for user:', req.user.id);
-    //   return res.status(403).json({ msg: 'Access denied' });
-    // }
+    if (!isAdmin && !isCreator && !isStudent && !isTeamMember && !isMentor) {
+      console.log('Access denied for user:', req.user.id);
+      return res.status(403).json({ msg: 'Access denied' });
+    }
 
     console.log('Access granted');
     res.json(project);

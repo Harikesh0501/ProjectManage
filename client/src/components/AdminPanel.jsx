@@ -40,7 +40,9 @@ const AdminPanel = () => {
         startDate: newProject.startDate,
         endDate: newProject.endDate
       };
-      await axios.post(`${API_URL}/api/projects`, projectData);
+      await axios.post(`${API_URL}/api/projects`, projectData, {
+        headers: { 'x-auth-token': localStorage.getItem('token') }
+      });
       setNewProject({ title: '', description: '', status: 'Planning', startDate: '', endDate: '', mentor: '', teamMemberCount: 0 });
       alert('Project created successfully!');
       fetchAdminData();
@@ -147,11 +149,10 @@ const AdminPanel = () => {
                 <div key={u._id} className="glass p-4 rounded-xl hover:shadow-lg transition-all duration-300">
                   <div className="flex justify-between items-start mb-2">
                     <h3 className="font-bold gradient-text">{u.name}</h3>
-                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                      u.role === 'Admin' ? 'bg-gradient-to-r from-purple-400 to-purple-600 text-white' :
-                      u.role === 'Mentor' ? 'bg-gradient-to-r from-green-400 to-green-600 text-white' :
-                      'bg-gradient-to-r from-blue-400 to-blue-600 text-white'
-                    }`}>
+                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${u.role === 'Admin' ? 'bg-gradient-to-r from-purple-400 to-purple-600 text-white' :
+                        u.role === 'Mentor' ? 'bg-gradient-to-r from-green-400 to-green-600 text-white' :
+                          'bg-gradient-to-r from-blue-400 to-blue-600 text-white'
+                      }`}>
                       {u.role}
                     </span>
                   </div>
@@ -314,11 +315,10 @@ const AdminPanel = () => {
                 <div key={p._id} className="glass p-4 rounded-xl cursor-pointer hover:shadow-lg transition-all duration-300" onClick={() => navigate(`/project/${p._id}`)}>
                   <div className="flex justify-between items-start mb-2">
                     <h3 className="font-bold gradient-text">{p.title}</h3>
-                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                      p.status === 'Completed' ? 'bg-gradient-to-r from-green-400 to-green-600 text-white' :
-                      p.status === 'Active' ? 'bg-gradient-to-r from-blue-400 to-blue-600 text-white' :
-                      'bg-gradient-to-r from-yellow-400 to-yellow-600 text-white'
-                    }`}>
+                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${p.status === 'Completed' ? 'bg-gradient-to-r from-green-400 to-green-600 text-white' :
+                        p.status === 'Active' ? 'bg-gradient-to-r from-blue-400 to-blue-600 text-white' :
+                          'bg-gradient-to-r from-yellow-400 to-yellow-600 text-white'
+                      }`}>
                       {p.status}
                     </span>
                   </div>
@@ -385,176 +385,174 @@ const AdminPanel = () => {
         {activeSection === 'overview' && (
           <>
 
-        {/* Admin Statistics Dashboard */}
-        <div className="card-modern mb-8">
-          <h2 className="text-3xl font-bold gradient-text mb-6">System Statistics</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div className="glass p-6 rounded-xl text-center">
-              <h3 className="text-2xl font-bold gradient-text mb-2">{allUsers.length}</h3>
-              <p className="text-gray-600">Total Users</p>
-              <div className="mt-2 text-sm">
-                <span className="text-blue-500">{allUsers.filter(u => u.role === 'Student').length} Students</span> •
-                <span className="text-green-500"> {allUsers.filter(u => u.role === 'Mentor').length} Mentors</span> •
-                <span className="text-purple-500"> {allUsers.filter(u => u.role === 'Admin').length} Admins</span>
-              </div>
-            </div>
-            <div className="glass p-6 rounded-xl text-center">
-              <h3 className="text-2xl font-bold gradient-text mb-2">{allProjects.length}</h3>
-              <p className="text-gray-600">Total Projects</p>
-              <div className="mt-2 text-sm">
-                <span className="text-green-500">{allProjects.filter(p => p.status === 'Completed').length} Completed</span> •
-                <span className="text-blue-500"> {allProjects.filter(p => p.status === 'Active').length} Active</span> •
-                <span className="text-yellow-500"> {allProjects.filter(p => p.status === 'On Hold').length} On Hold</span>
-              </div>
-            </div>
-            <div className="glass p-6 rounded-xl text-center">
-              <h3 className="text-2xl font-bold gradient-text mb-2">
-                {Math.round(allProjects.reduce((acc, p) => acc + (p.progress || 0), 0) / Math.max(allProjects.length, 1))}%
-              </h3>
-              <p className="text-gray-600">Average Progress</p>
-            </div>
-            <div className="glass p-6 rounded-xl text-center">
-              <h3 className="text-2xl font-bold gradient-text mb-2">
-                {allProjects.filter(p => p.githubRepo).length}
-              </h3>
-              <p className="text-gray-600">GitHub Integrated</p>
-            </div>
-          </div>
-        </div>
-
-        {/* User Management */}
-        <div className="card-modern mb-8">
-          <h2 className="text-3xl font-bold gradient-text mb-6">User Management</h2>
-          <div className="mb-4 flex flex-wrap gap-4">
-            <button onClick={() => setActiveSection('user-details')} className="btn-gradient bg-gradient-to-r from-blue-500 to-cyan-500">
-              View User Details
-            </button>
-            <button onClick={() => setActiveSection('add-user')} className="btn-gradient bg-gradient-to-r from-green-500 to-teal-500">
-              Add New User
-            </button>
-            <button onClick={() => setActiveSection('bulk-actions')} className="btn-gradient bg-gradient-to-r from-yellow-500 to-orange-500">
-              Bulk Actions
-            </button>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-h-96 overflow-y-auto">
-            {allUsers.map(u => (
-              <div key={u._id} className="glass p-4 rounded-xl hover:shadow-lg transition-all duration-300">
-                <div className="flex justify-between items-start mb-2">
-                  <h3 className="font-bold gradient-text">{u.name}</h3>
-                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                    u.role === 'Admin' ? 'bg-gradient-to-r from-purple-400 to-purple-600 text-white' :
-                    u.role === 'Mentor' ? 'bg-gradient-to-r from-green-400 to-green-600 text-white' :
-                    'bg-gradient-to-r from-blue-400 to-blue-600 text-white'
-                  }`}>
-                    {u.role}
-                  </span>
-                </div>
-                <p className="text-gray-600 text-sm mb-2">{u.email}</p>
-                <div className="flex space-x-2">
-                  <button onClick={() => setSelectedUser(u)} className="text-xs bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600">
-                    Edit
-                  </button>
-                  <button className="text-xs bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600">
-                    Delete
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {selectedUser && (
-          <EditUserModal user={selectedUser} onClose={() => setSelectedUser(null)} onSaved={handleUserSaved} />
-        )}
-
-        {/* Project Management */}
-        <div className="card-modern mb-8">
-          <h2 className="text-3xl font-bold gradient-text mb-6">Project Management</h2>
-          <div className="mb-4 flex flex-wrap gap-4">
-            <button onClick={() => setActiveSection('create-project')} className="btn-gradient bg-gradient-to-r from-blue-500 to-cyan-500">
-              Create Project
-            </button>
-            <button onClick={() => setActiveSection('project-details')} className="btn-gradient bg-gradient-to-r from-green-500 to-teal-500">
-              View Project Details
-            </button>
-            <button onClick={() => setActiveSection('bulk-edit')} className="btn-gradient bg-gradient-to-r from-yellow-500 to-orange-500">
-              Bulk Edit
-            </button>
-            <select className="input-modern w-auto">
-              <option value="">Filter by Status</option>
-              <option value="Planning">Planning</option>
-              <option value="Active">Active</option>
-              <option value="Completed">Completed</option>
-            </select>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-96 overflow-y-auto">
-            {allProjects.map(p => (
-              <div key={p._id} className="glass p-4 rounded-xl cursor-pointer hover:shadow-lg transition-all duration-300" onClick={() => navigate(`/project/${p._id}`)}>
-                <div className="flex justify-between items-start mb-2">
-                  <h3 className="font-bold gradient-text">{p.title}</h3>
-                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                    p.status === 'Completed' ? 'bg-gradient-to-r from-green-400 to-green-600 text-white' :
-                    p.status === 'Active' ? 'bg-gradient-to-r from-blue-400 to-blue-600 text-white' :
-                    'bg-gradient-to-r from-yellow-400 to-yellow-600 text-white'
-                  }`}>
-                    {p.status}
-                  </span>
-                </div>
-                <p className="text-gray-600 text-sm mb-3 line-clamp-2">{p.description}</p>
-                <div className="flex items-center justify-between text-xs text-gray-500 mb-2">
-                  <span>Creator: {p.creator?.name || 'Unknown'}</span>
-                  <span>Mentor: {p.mentor?.name || 'Unassigned'}</span>
-                </div>
-                <div className="flex items-center justify-between text-xs text-gray-500 mb-2">
-                  <span>Team: {p.teamMembers?.length || 0} members</span>
-                  <span>Progress: {p.progress || 0}%</span>
-                </div>
-                <div className="flex items-center justify-between text-xs text-gray-500">
-                  <span>Start: {p.startDate}</span>
-                  <span>End: {p.endDate}</span>
-                </div>
-                {p.githubRepo && (
-                  <div className="mt-2">
-                    <span className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded">
-                      <i className="fab fa-github mr-1"></i>GitHub Linked
-                    </span>
+            {/* Admin Statistics Dashboard */}
+            <div className="card-modern mb-8">
+              <h2 className="text-3xl font-bold gradient-text mb-6">System Statistics</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div className="glass p-6 rounded-xl text-center">
+                  <h3 className="text-2xl font-bold gradient-text mb-2">{allUsers.length}</h3>
+                  <p className="text-gray-600">Total Users</p>
+                  <div className="mt-2 text-sm">
+                    <span className="text-blue-500">{allUsers.filter(u => u.role === 'Student').length} Students</span> •
+                    <span className="text-green-500"> {allUsers.filter(u => u.role === 'Mentor').length} Mentors</span> •
+                    <span className="text-purple-500"> {allUsers.filter(u => u.role === 'Admin').length} Admins</span>
                   </div>
-                )}
+                </div>
+                <div className="glass p-6 rounded-xl text-center">
+                  <h3 className="text-2xl font-bold gradient-text mb-2">{allProjects.length}</h3>
+                  <p className="text-gray-600">Total Projects</p>
+                  <div className="mt-2 text-sm">
+                    <span className="text-green-500">{allProjects.filter(p => p.status === 'Completed').length} Completed</span> •
+                    <span className="text-blue-500"> {allProjects.filter(p => p.status === 'Active').length} Active</span> •
+                    <span className="text-yellow-500"> {allProjects.filter(p => p.status === 'On Hold').length} On Hold</span>
+                  </div>
+                </div>
+                <div className="glass p-6 rounded-xl text-center">
+                  <h3 className="text-2xl font-bold gradient-text mb-2">
+                    {Math.round(allProjects.reduce((acc, p) => acc + (p.progress || 0), 0) / Math.max(allProjects.length, 1))}%
+                  </h3>
+                  <p className="text-gray-600">Average Progress</p>
+                </div>
+                <div className="glass p-6 rounded-xl text-center">
+                  <h3 className="text-2xl font-bold gradient-text mb-2">
+                    {allProjects.filter(p => p.githubRepo).length}
+                  </h3>
+                  <p className="text-gray-600">GitHub Integrated</p>
+                </div>
               </div>
-            ))}
-          </div>
-        </div>
+            </div>
 
-        {/* System Settings */}
-        <div className="card-modern">
-          <h2 className="text-3xl font-bold gradient-text mb-6">System Settings</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="glass p-4 rounded-xl">
-              <h3 className="font-bold gradient-text mb-2">Database Management</h3>
-              <p className="text-gray-600 text-sm mb-4">Backup, restore, and maintenance options</p>
-              <div className="flex space-x-2">
-                <button className="btn-gradient text-sm">Backup</button>
-                <button className="btn-gradient text-sm bg-gradient-to-r from-yellow-500 to-orange-500">Maintenance</button>
+            {/* User Management */}
+            <div className="card-modern mb-8">
+              <h2 className="text-3xl font-bold gradient-text mb-6">User Management</h2>
+              <div className="mb-4 flex flex-wrap gap-4">
+                <button onClick={() => setActiveSection('user-details')} className="btn-gradient bg-gradient-to-r from-blue-500 to-cyan-500">
+                  View User Details
+                </button>
+                <button onClick={() => setActiveSection('add-user')} className="btn-gradient bg-gradient-to-r from-green-500 to-teal-500">
+                  Add New User
+                </button>
+                <button onClick={() => setActiveSection('bulk-actions')} className="btn-gradient bg-gradient-to-r from-yellow-500 to-orange-500">
+                  Bulk Actions
+                </button>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-h-96 overflow-y-auto">
+                {allUsers.map(u => (
+                  <div key={u._id} className="glass p-4 rounded-xl hover:shadow-lg transition-all duration-300">
+                    <div className="flex justify-between items-start mb-2">
+                      <h3 className="font-bold gradient-text">{u.name}</h3>
+                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${u.role === 'Admin' ? 'bg-gradient-to-r from-purple-400 to-purple-600 text-white' :
+                          u.role === 'Mentor' ? 'bg-gradient-to-r from-green-400 to-green-600 text-white' :
+                            'bg-gradient-to-r from-blue-400 to-blue-600 text-white'
+                        }`}>
+                        {u.role}
+                      </span>
+                    </div>
+                    <p className="text-gray-600 text-sm mb-2">{u.email}</p>
+                    <div className="flex space-x-2">
+                      <button onClick={() => setSelectedUser(u)} className="text-xs bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600">
+                        Edit
+                      </button>
+                      <button className="text-xs bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600">
+                        Delete
+                      </button>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
-            <div className="glass p-4 rounded-xl">
-              <h3 className="font-bold gradient-text mb-2">System Logs</h3>
-              <p className="text-gray-600 text-sm mb-4">View system activity and error logs</p>
-              <button className="btn-gradient text-sm">View Logs</button>
+
+            {selectedUser && (
+              <EditUserModal user={selectedUser} onClose={() => setSelectedUser(null)} onSaved={handleUserSaved} />
+            )}
+
+            {/* Project Management */}
+            <div className="card-modern mb-8">
+              <h2 className="text-3xl font-bold gradient-text mb-6">Project Management</h2>
+              <div className="mb-4 flex flex-wrap gap-4">
+                <button onClick={() => setActiveSection('create-project')} className="btn-gradient bg-gradient-to-r from-blue-500 to-cyan-500">
+                  Create Project
+                </button>
+                <button onClick={() => setActiveSection('project-details')} className="btn-gradient bg-gradient-to-r from-green-500 to-teal-500">
+                  View Project Details
+                </button>
+                <button onClick={() => setActiveSection('bulk-edit')} className="btn-gradient bg-gradient-to-r from-yellow-500 to-orange-500">
+                  Bulk Edit
+                </button>
+                <select className="input-modern w-auto">
+                  <option value="">Filter by Status</option>
+                  <option value="Planning">Planning</option>
+                  <option value="Active">Active</option>
+                  <option value="Completed">Completed</option>
+                </select>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-96 overflow-y-auto">
+                {allProjects.map(p => (
+                  <div key={p._id} className="glass p-4 rounded-xl cursor-pointer hover:shadow-lg transition-all duration-300" onClick={() => navigate(`/project/${p._id}`)}>
+                    <div className="flex justify-between items-start mb-2">
+                      <h3 className="font-bold gradient-text">{p.title}</h3>
+                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${p.status === 'Completed' ? 'bg-gradient-to-r from-green-400 to-green-600 text-white' :
+                          p.status === 'Active' ? 'bg-gradient-to-r from-blue-400 to-blue-600 text-white' :
+                            'bg-gradient-to-r from-yellow-400 to-yellow-600 text-white'
+                        }`}>
+                        {p.status}
+                      </span>
+                    </div>
+                    <p className="text-gray-600 text-sm mb-3 line-clamp-2">{p.description}</p>
+                    <div className="flex items-center justify-between text-xs text-gray-500 mb-2">
+                      <span>Creator: {p.creator?.name || 'Unknown'}</span>
+                      <span>Mentor: {p.mentor?.name || 'Unassigned'}</span>
+                    </div>
+                    <div className="flex items-center justify-between text-xs text-gray-500 mb-2">
+                      <span>Team: {p.teamMembers?.length || 0} members</span>
+                      <span>Progress: {p.progress || 0}%</span>
+                    </div>
+                    <div className="flex items-center justify-between text-xs text-gray-500">
+                      <span>Start: {p.startDate}</span>
+                      <span>End: {p.endDate}</span>
+                    </div>
+                    {p.githubRepo && (
+                      <div className="mt-2">
+                        <span className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded">
+                          <i className="fab fa-github mr-1"></i>GitHub Linked
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
             </div>
-            <div className="glass p-4 rounded-xl">
-              <h3 className="font-bold gradient-text mb-2">Notifications</h3>
-              <p className="text-gray-600 text-sm mb-4">Configure system-wide notifications</p>
-              <button className="btn-gradient text-sm">Configure</button>
+
+            {/* System Settings */}
+            <div className="card-modern">
+              <h2 className="text-3xl font-bold gradient-text mb-6">System Settings</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="glass p-4 rounded-xl">
+                  <h3 className="font-bold gradient-text mb-2">Database Management</h3>
+                  <p className="text-gray-600 text-sm mb-4">Backup, restore, and maintenance options</p>
+                  <div className="flex space-x-2">
+                    <button className="btn-gradient text-sm">Backup</button>
+                    <button className="btn-gradient text-sm bg-gradient-to-r from-yellow-500 to-orange-500">Maintenance</button>
+                  </div>
+                </div>
+                <div className="glass p-4 rounded-xl">
+                  <h3 className="font-bold gradient-text mb-2">System Logs</h3>
+                  <p className="text-gray-600 text-sm mb-4">View system activity and error logs</p>
+                  <button className="btn-gradient text-sm">View Logs</button>
+                </div>
+                <div className="glass p-4 rounded-xl">
+                  <h3 className="font-bold gradient-text mb-2">Notifications</h3>
+                  <p className="text-gray-600 text-sm mb-4">Configure system-wide notifications</p>
+                  <button className="btn-gradient text-sm">Configure</button>
+                </div>
+                <div className="glass p-4 rounded-xl">
+                  <h3 className="font-bold gradient-text mb-2">Reports</h3>
+                  <p className="text-gray-600 text-sm mb-4">Generate detailed system reports</p>
+                  <button className="btn-gradient text-sm">Generate Report</button>
+                </div>
+              </div>
             </div>
-            <div className="glass p-4 rounded-xl">
-              <h3 className="font-bold gradient-text mb-2">Reports</h3>
-              <p className="text-gray-600 text-sm mb-4">Generate detailed system reports</p>
-              <button className="btn-gradient text-sm">Generate Report</button>
-            </div>
-          </div>
-        </div>
-        </>
+          </>
         )}
       </div>
     </div>

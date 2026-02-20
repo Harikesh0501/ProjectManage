@@ -66,7 +66,7 @@ mongoose.connect(process.env.MONGODB_URI)
   .catch(err => console.log(err));
 
 // Apply Cache Middleware to read-heavy routes
-app.use('/api/projects', cacheService.middleware(60), projectRoutes);
+app.use('/api/projects', projectRoutes); // No cache - project data is user-specific, caching leaks data between users
 app.use('/api/tasks', cacheService.middleware(60), taskRoutes);
 app.use('/api/feedback', cacheService.middleware(300), feedbackRoutes); // Feedback changes rarely
 app.use('/api/mentors', cacheService.middleware(300), mentorRoutes);
